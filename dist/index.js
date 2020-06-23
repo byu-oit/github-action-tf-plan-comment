@@ -972,7 +972,7 @@ function run() {
                     core.debug('adding to toCreate');
                     toCreate.push(`${resourceChange.type} ${resourceChange.name}`);
                 }
-                else if (actions.length === 1 && actions.includes(types_1.Action.delete)) {
+                else if (actions === [types_1.Action.delete]) {
                     core.debug('adding to toDelete');
                     toDelete.push(`${resourceChange.type} ${resourceChange.name}`);
                 }
@@ -995,10 +995,18 @@ function run() {
             core.debug(`toReplace: ${toReplace}`);
             core.debug(`toDelete: ${toDelete}`);
             let body = `${commentPrefix}\n`;
-            body += `Terraform will create: ${toCreate}\n`;
-            body += `Terraform will update: ${toUpdate}\n`;
-            body += `Terraform will replace (delete then create): ${toReplace}\n`;
-            body += `Terraform will delete: ${toDelete}\n`;
+            if (toCreate.length > 0) {
+                body += `will create: ${toCreate}\n`;
+            }
+            if (toUpdate.length > 0) {
+                body += `will update: ${toUpdate}\n`;
+            }
+            if (toReplace.length > 0) {
+                body += `will replace (delete then create): ${toReplace}\n`;
+            }
+            if (toDelete.length > 0) {
+                body += `will delete: ${toDelete}\n`;
+            }
             // TODO add link to workflow in the comment
             const token = core.getInput('github_token');
             core.debug('got token');
