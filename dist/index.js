@@ -958,11 +958,20 @@ function run() {
             core.debug('got issue');
             const token = core.getInput('github_token');
             core.debug('got token');
-            core.debug(`from env ${process.env['GITHUB_TOKEN']}`);
             const octokit = github.getOctokit(token);
             const nwo = process.env['GITHUB_REPOSITORY'] || '/';
             const [owner, repo] = nwo.split('/');
-            core.debug('hi');
+            core.debug(`owner: ${owner}, repo: ${repo}`);
+            // find previous comment if it exists
+            const comments = yield octokit.issues.listComments({
+                owner,
+                repo,
+                issue_number: pr.number
+            });
+            core.debug(`comments: ${comments}`);
+            for (const comment of comments.data) {
+                core.debug(`comment: ${comment}`);
+            }
             const commentResponse = yield octokit.issues.createComment({
                 owner,
                 repo,

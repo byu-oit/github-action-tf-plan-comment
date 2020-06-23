@@ -16,6 +16,16 @@ async function run(): Promise<void> {
     const [owner, repo] = nwo.split('/')
 
     core.debug(`owner: ${owner}, repo: ${repo}`)
+    // find previous comment if it exists
+    const comments = await octokit.issues.listComments({
+      owner,
+      repo,
+      issue_number: pr.number
+    })
+    core.debug(`comments: ${comments}`)
+    for (const comment of comments.data) {
+      core.debug(`comment: ${comment}`)
+    }
     const commentResponse = await octokit.issues.createComment({
       owner,
       repo,
