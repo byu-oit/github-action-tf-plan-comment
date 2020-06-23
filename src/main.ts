@@ -23,6 +23,7 @@ async function run(): Promise<void> {
     const toReplace = []
     const toUpdate = []
     for (const resourceChange of terraformPlan.resource_changes) {
+      core.debug(`resource: ${JSON.stringify(resourceChange)}`)
       switch (resourceChange.change.actions) {
         case [Action.create]:
           toCreate.push(`${resourceChange.type} ${resourceChange.name}`)

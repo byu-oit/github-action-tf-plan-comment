@@ -966,6 +966,7 @@ function run() {
             const toReplace = [];
             const toUpdate = [];
             for (const resourceChange of terraformPlan.resource_changes) {
+                core.debug(`resource: ${JSON.stringify(resourceChange)}`);
                 switch (resourceChange.change.actions) {
                     case [types_1.Action.create]:
                         toCreate.push(`${resourceChange.type} ${resourceChange.name}`);
