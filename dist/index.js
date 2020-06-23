@@ -993,32 +993,32 @@ function run() {
             core.debug(`toDelete: ${toDelete}`);
             let body = `${commentPrefix}\n`;
             if (toCreate.length > 0) {
-                body += `\twill create: \n`;
+                body += `will create: \n`;
                 for (const resource of toCreate) {
-                    body += `\t- ${resource}`;
+                    body += `- ${resource}`;
                 }
-                body += '\n';
+                body += '\n\n';
             }
             if (toUpdate.length > 0) {
-                body += `\twill update: \n`;
+                body += `will update: \n`;
                 for (const resource of toUpdate) {
-                    body += `\t- ${resource}`;
+                    body += `- ${resource}`;
                 }
-                body += '\n';
+                body += '\n\n';
             }
             if (toReplace.length > 0) {
-                body += `\twill replace (delete then create): \n`;
+                body += `will replace (**delete** then create): \n`;
                 for (const resource of toReplace) {
-                    body += `\t- ${resource}`;
+                    body += `- ${resource}`;
                 }
-                body += '\n';
+                body += '\n\n';
             }
             if (toDelete.length > 0) {
-                body += `\twill delete: \n`;
+                body += `will **delete**: \n`;
                 for (const resource of toDelete) {
-                    body += `\t- ${resource}`;
+                    body += `- ${resource}`;
                 }
-                body += '\n';
+                body += '\n\n';
             }
             // TODO add link to workflow in the comment
             const token = core.getInput('github_token');
