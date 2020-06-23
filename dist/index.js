@@ -948,15 +948,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
+const types_1 = __webpack_require__(251);
 const commentPrefix = 'Terraform Plan:';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug('got inside the action');
             const pr = github.context.payload.pull_request;
-            if (!pr)
+            if (!pr) {
+                core.info('No pull request, exiting action...');
                 return;
-            core.debug('got issue');
+            }
+            core.debug('got pull request');
+            const terraformPlan = JSON.parse(core.getInput('terraform_plan_json'));
+            const toCreate = [];
+            const toDelete = [];
+            const toReplace = [];
+            const toUpdate = [];
+            for (const resourceChange of terraformPlan.resource_changes) {
+                switch (resourceChange.change.actions) {
+                    case [types_1.Action.create]:
+                        toCreate.push(resourceChange);
+                        break;
+                    case [types_1.Action.delete]:
+                        toDelete.push(resourceChange);
+                        break;
+                    case [types_1.Action.delete, types_1.Action.create]:
+                    case [types_1.Action.create, types_1.Action.delete]:
+                        toReplace.push(resourceChange);
+                        break;
+                    case [types_1.Action.update]:
+                        toUpdate.push(resourceChange);
+                        break;
+                }
+            }
+            let body = `${commentPrefix}\n`;
+            body += `Terraform will create: ${toCreate.map(value => `${value.type} ${value.name}`)}\n`;
+            body += `Terraform will update: ${toUpdate.map(value => `${value.type} ${value.name}`)}\n`;
+            body += `Terraform will replace (delete then create): ${toReplace.map(value => `${value.type} ${value.name}`)}\n`;
+            body += `Terraform will delete: ${toDelete.map(value => `${value.type} ${value.name}`)}\n`;
+            // TODO add link to workflow in the comment
             const token = core.getInput('github_token');
             core.debug('got token');
             const octokit = github.getOctokit(token);
@@ -977,22 +1008,24 @@ function run() {
                 }
             }
             if (previousCommentId) {
+                // update the previous comment
                 core.debug(`Updating existing comment ${previousCommentId}`);
                 yield octokit.issues.updateComment({
                     owner,
                     repo,
                     issue_number: pr.number,
                     comment_id: previousCommentId,
-                    body: `${commentPrefix}\nUpdated hello there`
+                    body
                 });
             }
             else {
+                // create new comment if previous comment does not exist
                 core.debug('Creating new comment');
                 octokit.issues.createComment({
                     owner,
                     repo,
                     issue_number: pr.number,
-                    body: `${commentPrefix}\nHello there`
+                    body
                 });
             }
         }
@@ -1010,6 +1043,25 @@ run();
 /***/ (function(module) {
 
 module.exports = require("https");
+
+/***/ }),
+
+/***/ 251:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Action = void 0;
+var Action;
+(function (Action) {
+    Action[Action["no-op"] = 0] = "no-op";
+    Action[Action["create"] = 1] = "create";
+    Action[Action["read"] = 2] = "read";
+    Action[Action["update"] = 3] = "update";
+    Action[Action["delete"] = 4] = "delete";
+})(Action = exports.Action || (exports.Action = {}));
+
 
 /***/ }),
 
