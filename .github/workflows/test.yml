@@ -25,7 +25,7 @@ jobs:
           {
             "resource_changes": [
               {
-                "address": "module.app.module.database.aws_db_instance.database"
+                "address": "module.app.module.database.aws_db_instance.database",
                 "type": "aws_db_instance",
                 "name": "database",
                 "change": {
@@ -33,7 +33,7 @@ jobs:
                 }
               },
               {
-                "address": "module.app.aws_security_group_rule.db_access"
+                "address": "module.app.aws_security_group_rule.db_access",
                 "type": "aws_security_group_rule",
                 "name": "db_access",
                 "change": {
