@@ -4,24 +4,6 @@ import {Action, TerraformPlan} from './types'
 
 const commentPrefix = 'Terraform Plan:'
 
-function actionsEqual(a: Action[], b: Action[]): boolean {
-  if (a === b) return true
-  if (a == null || b == null) return false
-  if (a.length !== b.length) return false
-
-  // If you don't care about the order of the elements inside
-  // the array, you should sort both arrays here.
-  // Please note that calling sort on an array will modify that array.
-  // you might want to clone your array first.
-
-  a.sort(a1 => a1.valueOf())
-  b.sort(b1 => b1.valueOf())
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false
-  }
-  return true
-}
-
 async function run(): Promise<void> {
   try {
     core.debug('got inside the action')
@@ -43,16 +25,20 @@ async function run(): Promise<void> {
     for (const resourceChange of terraformPlan.resource_changes) {
       core.debug(`resource: ${JSON.stringify(resourceChange)}`)
       const actions = resourceChange.change.actions
-      if (actionsEqual(actions, [Action.create])) {
+      if (actions.length === 1 && actions.includes(Action.create)) {
         core.debug('adding to toCreate')
         toCreate.push(`${resourceChange.type} ${resourceChange.name}`)
-      } else if (actionsEqual(actions, [Action.delete])) {
+      } else if (actions.length === 1 && actions.includes(Action.delete)) {
         core.debug('adding to toDelete')
         toDelete.push(`${resourceChange.type} ${resourceChange.name}`)
-      } else if (actionsEqual(actions, [Action.delete])) {
+      } else if (
+        actions.length === 2 &&
+        actions.includes(Action.delete) &&
+        actions.includes(Action.create)
+      ) {
         core.debug('adding to toReplace')
         toReplace.push(`${resourceChange.type} ${resourceChange.name}`)
-      } else if (actionsEqual(actions, [Action.delete])) {
+      } else if (actions.length === 1 && actions.includes(Action.delete)) {
         core.debug('adding to toUpdate')
         toUpdate.push(`${resourceChange.type} ${resourceChange.name}`)
       } else {
