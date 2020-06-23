@@ -22,9 +22,9 @@ async function run(): Promise<void> {
       repo,
       issue_number: pr.number
     })
-    core.debug(`comments: ${comments}`)
+    core.debug(`comments: ${JSON.stringify(comments)}`)
     for (const comment of comments.data) {
-      core.debug(`comment: ${comment}`)
+      core.debug(`comment: ${JSON.stringify(comment)}`)
     }
     const commentResponse = await octokit.issues.createComment({
       owner,
