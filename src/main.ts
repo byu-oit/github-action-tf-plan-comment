@@ -26,16 +26,20 @@ async function run(): Promise<void> {
       core.debug(`resource: ${JSON.stringify(resourceChange)}`)
       switch (resourceChange.change.actions) {
         case [Action.create]:
+          core.debug('adding to toCreate')
           toCreate.push(`${resourceChange.type} ${resourceChange.name}`)
           break
         case [Action.delete]:
+          core.debug('adding to toDelete')
           toDelete.push(`${resourceChange.type} ${resourceChange.name}`)
           break
         case [Action.delete, Action.create]:
         case [Action.create, Action.delete]:
+          core.debug('adding to toReplace')
           toReplace.push(`${resourceChange.type} ${resourceChange.name}`)
           break
         case [Action.update]:
+          core.debug('adding to toUpdate')
           toUpdate.push(`${resourceChange.type} ${resourceChange.name}`)
           break
       }

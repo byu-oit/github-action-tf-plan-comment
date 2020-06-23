@@ -969,16 +969,20 @@ function run() {
                 core.debug(`resource: ${JSON.stringify(resourceChange)}`);
                 switch (resourceChange.change.actions) {
                     case [types_1.Action.create]:
+                        core.debug('adding to toCreate');
                         toCreate.push(`${resourceChange.type} ${resourceChange.name}`);
                         break;
                     case [types_1.Action.delete]:
+                        core.debug('adding to toDelete');
                         toDelete.push(`${resourceChange.type} ${resourceChange.name}`);
                         break;
                     case [types_1.Action.delete, types_1.Action.create]:
                     case [types_1.Action.create, types_1.Action.delete]:
+                        core.debug('adding to toReplace');
                         toReplace.push(`${resourceChange.type} ${resourceChange.name}`);
                         break;
                     case [types_1.Action.update]:
+                        core.debug('adding to toUpdate');
                         toUpdate.push(`${resourceChange.type} ${resourceChange.name}`);
                         break;
                 }
