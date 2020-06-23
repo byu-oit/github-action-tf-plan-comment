@@ -24,7 +24,6 @@ async function run(): Promise<void> {
       repo,
       issue_number: pr.number
     })
-    core.debug(`comments: ${JSON.stringify(comments)}`)
     let previousCommentId: number | null = null
     for (const comment of comments.data) {
       if (

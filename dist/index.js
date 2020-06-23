@@ -969,7 +969,6 @@ function run() {
                 repo,
                 issue_number: pr.number
             });
-            core.debug(`comments: ${JSON.stringify(comments)}`);
             let previousCommentId = null;
             for (const comment of comments.data) {
                 if (comment.user.login === 'github-actions[bot]' &&
