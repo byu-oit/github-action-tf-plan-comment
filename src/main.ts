@@ -25,22 +25,19 @@ async function run(): Promise<void> {
     for (const resourceChange of terraformPlan.resource_changes) {
       core.debug(`resource: ${JSON.stringify(resourceChange)}`)
       const actions = resourceChange.change.actions
+      const resourceName = `${resourceChange.type} - ${resourceChange.name}`
       if (actions.length === 1 && actions.includes(Action.create)) {
-        core.debug('adding to toCreate')
-        toCreate.push(`${resourceChange.type} ${resourceChange.name}`)
-      } else if (actions === [Action.delete]) {
-        core.debug('adding to toDelete')
-        toDelete.push(`${resourceChange.type} ${resourceChange.name}`)
+        toCreate.push(resourceName)
+      } else if (actions.length === 1 && actions.includes(Action.delete)) {
+        toDelete.push(resourceName)
       } else if (
         actions.length === 2 &&
         actions.includes(Action.delete) &&
         actions.includes(Action.create)
       ) {
-        core.debug('adding to toReplace')
-        toReplace.push(`${resourceChange.type} ${resourceChange.name}`)
-      } else if (actions.length === 1 && actions.includes(Action.delete)) {
-        core.debug('adding to toUpdate')
-        toUpdate.push(`${resourceChange.type} ${resourceChange.name}`)
+        toReplace.push(resourceName)
+      } else if (actions.length === 1 && actions.includes(Action.update)) {
+        toUpdate.push(resourceName)
       } else {
         core.debug(`Not found? ${actions}`)
       }
@@ -53,16 +50,32 @@ async function run(): Promise<void> {
 
     let body = `${commentPrefix}\n`
     if (toCreate.length > 0) {
-      body += `will create: ${toCreate}\n`
+      body += `\twill create: \n`
+      for (const resource of toCreate) {
+        body += `\t- ${resource}`
+      }
+      body += '\n'
     }
     if (toUpdate.length > 0) {
-      body += `will update: ${toUpdate}\n`
+      body += `\twill update: \n`
+      for (const resource of toUpdate) {
+        body += `\t- ${resource}`
+      }
+      body += '\n'
     }
     if (toReplace.length > 0) {
-      body += `will replace (delete then create): ${toReplace}\n`
+      body += `\twill replace (delete then create): \n`
+      for (const resource of toReplace) {
+        body += `\t- ${resource}`
+      }
+      body += '\n'
     }
     if (toDelete.length > 0) {
-      body += `will delete: ${toDelete}\n`
+      body += `\twill delete: \n`
+      for (const resource of toDelete) {
+        body += `\t- ${resource}`
+      }
+      body += '\n'
     }
     // TODO add link to workflow in the comment
 
