@@ -15,9 +15,9 @@ export interface ChangeRepresentation {
 }
 
 export enum Action {
-  'no-op',
-  'create',
-  'read',
-  'update',
-  'delete'
+  'no-op' = 'no-op',
+  'create' = 'create',
+  'read' = 'read',
+  'update' = 'update',
+  'delete' = 'delete'
 }

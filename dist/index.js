@@ -1067,11 +1067,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Action = void 0;
 var Action;
 (function (Action) {
-    Action[Action["no-op"] = 0] = "no-op";
-    Action[Action["create"] = 1] = "create";
-    Action[Action["read"] = 2] = "read";
-    Action[Action["update"] = 3] = "update";
-    Action[Action["delete"] = 4] = "delete";
+    Action["no-op"] = "no-op";
+    Action["create"] = "create";
+    Action["read"] = "read";
+    Action["update"] = "update";
+    Action["delete"] = "delete";
 })(Action = exports.Action || (exports.Action = {}));
 
 
