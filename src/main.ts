@@ -24,24 +24,21 @@ async function run(): Promise<void> {
     const toUpdate = []
     for (const resourceChange of terraformPlan.resource_changes) {
       core.debug(`resource: ${JSON.stringify(resourceChange)}`)
-      switch (resourceChange.change.actions) {
-        case [Action.create]:
-          core.debug('adding to toCreate')
-          toCreate.push(`${resourceChange.type} ${resourceChange.name}`)
-          break
-        case [Action.delete]:
-          core.debug('adding to toDelete')
-          toDelete.push(`${resourceChange.type} ${resourceChange.name}`)
-          break
-        case [Action.delete, Action.create]:
-        case [Action.create, Action.delete]:
-          core.debug('adding to toReplace')
-          toReplace.push(`${resourceChange.type} ${resourceChange.name}`)
-          break
-        case [Action.update]:
-          core.debug('adding to toUpdate')
-          toUpdate.push(`${resourceChange.type} ${resourceChange.name}`)
-          break
+      const actions = resourceChange.change.actions
+      if (actions === [Action.create]) {
+        core.debug('adding to toCreate')
+        toCreate.push(`${resourceChange.type} ${resourceChange.name}`)
+      } else if (actions === [Action.delete]) {
+        core.debug('adding to toDelete')
+        toDelete.push(`${resourceChange.type} ${resourceChange.name}`)
+      } else if (actions === [Action.delete]) {
+        core.debug('adding to toReplace')
+        toReplace.push(`${resourceChange.type} ${resourceChange.name}`)
+      } else if (actions === [Action.delete]) {
+        core.debug('adding to toUpdate')
+        toUpdate.push(`${resourceChange.type} ${resourceChange.name}`)
+      } else {
+        core.debug(`Not found? ${actions}`)
       }
     }
 
