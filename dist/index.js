@@ -948,6 +948,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
+const commentPrefix = 'Terraform Plan:';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -969,22 +970,32 @@ function run() {
                 issue_number: pr.number
             });
             core.debug(`comments: ${JSON.stringify(comments)}`);
+            let previousCommentId = null;
             for (const comment of comments.data) {
-                core.debug(`comment: ${JSON.stringify(comment)}`);
+                if (comment.user.login === 'github-actions[bot]' &&
+                    comment.body.startsWith(commentPrefix)) {
+                    previousCommentId = comment.id;
+                }
             }
-            const previousCommentId = core.getState('commentId');
-            core.debug(`previousCommentId: ${previousCommentId}`);
             if (previousCommentId) {
-                core.debug('We have a previous commentId');
+                core.debug(`Updating existing comment ${previousCommentId}`);
+                yield octokit.issues.updateComment({
+                    owner,
+                    repo,
+                    issue_number: pr.number,
+                    comment_id: previousCommentId,
+                    body: `${commentPrefix}\nUpdated hello there`
+                });
             }
-            const commentResponse = yield octokit.issues.createComment({
-                owner,
-                repo,
-                issue_number: pr.number,
-                body: 'Hello there 2'
-            });
-            core.debug(commentResponse.data.url);
-            core.saveState('commentId', commentResponse.data.id);
+            else {
+                core.debug('Creating new comment');
+                octokit.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: pr.number,
+                    body: `${commentPrefix}\nHello there`
+                });
+            }
         }
         catch (error) {
             core.setFailed(error.message);

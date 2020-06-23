@@ -1,6 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
+const commentPrefix = 'Terraform Plan:'
+
 async function run(): Promise<void> {
   try {
     core.debug('got inside the action')
@@ -23,22 +25,33 @@ async function run(): Promise<void> {
       issue_number: pr.number
     })
     core.debug(`comments: ${JSON.stringify(comments)}`)
+    let previousCommentId: number | null = null
     for (const comment of comments.data) {
-      core.debug(`comment: ${JSON.stringify(comment)}`)
+      if (
+        comment.user.login === 'github-actions[bot]' &&
+        comment.body.startsWith(commentPrefix)
+      ) {
+        previousCommentId = comment.id
+      }
     }
-    const previousCommentId = core.getState('commentId')
-    core.debug(`previousCommentId: ${previousCommentId}`)
     if (previousCommentId) {
-      core.debug('We have a previous commentId')
+      core.debug(`Updating existing comment ${previousCommentId}`)
+      await octokit.issues.updateComment({
+        owner,
+        repo,
+        issue_number: pr.number,
+        comment_id: previousCommentId,
+        body: `${commentPrefix}\nUpdated hello there`
+      })
+    } else {
+      core.debug('Creating new comment')
+      octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: pr.number,
+        body: `${commentPrefix}\nHello there`
+      })
     }
-    const commentResponse = await octokit.issues.createComment({
-      owner,
-      repo,
-      issue_number: pr.number,
-      body: 'Hello there 2'
-    })
-    core.debug(commentResponse.data.url)
-    core.saveState('commentId', commentResponse.data.id)
   } catch (error) {
     core.setFailed(error.message)
   }
