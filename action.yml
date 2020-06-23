@@ -1,10 +1,10 @@
 name: 'Terraform Plan Comment'
 description: 'Creates a comment on a pull request with the terraform plan'
 author: 'Brigham Young University'
-#inputs:
-#  myInput:              # change this
-#    description: 'input description here'
-#    default: 'default value if applicable'
+inputs:
+  github_token:
+    required: true
+    description: 'github token'
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -4,14 +4,14 @@ import * as github from '@actions/github'
 async function run(): Promise<void> {
   try {
     core.debug('got inside the action')
-    const issue = github.context.payload.issue
-    if (!issue) return
-
+    const pr = github.context.payload.pull_request
+    if (!pr) return
     core.debug('got issue')
-    const token = process.env['GITHUB_TOKEN']
-    if (!token) return
 
+    const token = core.getInput('github_token')
     core.debug('got token')
+    core.debug(`from env ${process.env['GITHUB_TOKEN']}`)
+
     const octokit = github.getOctokit(token)
     const nwo = process.env['GITHUB_REPOSITORY'] || '/'
     const [owner, repo] = nwo.split('/')
@@ -20,7 +20,7 @@ async function run(): Promise<void> {
     const commentResponse = await octokit.issues.createComment({
       owner,
       repo,
-      issue_number: issue.number,
+      issue_number: pr.number,
       body: 'Hello there'
     })
     core.debug(commentResponse.data.url)
