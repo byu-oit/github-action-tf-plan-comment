@@ -10,13 +10,12 @@ async function run(): Promise<void> {
 
     const token = core.getInput('github_token')
     core.debug('got token')
-    core.debug(`from env ${process.env['GITHUB_TOKEN']}`)
 
     const octokit = github.getOctokit(token)
     const nwo = process.env['GITHUB_REPOSITORY'] || '/'
     const [owner, repo] = nwo.split('/')
 
-    core.debug('hi')
+    core.debug(`owner: ${owner}, repo: ${repo}`)
     const commentResponse = await octokit.issues.createComment({
       owner,
       repo,
