@@ -26,13 +26,19 @@ async function run(): Promise<void> {
     for (const comment of comments.data) {
       core.debug(`comment: ${JSON.stringify(comment)}`)
     }
+    const previousCommentId = core.getState('commentId')
+    core.debug(`previousCommentId: ${previousCommentId}`)
+    if (previousCommentId) {
+      core.debug('We have a previous commentId')
+    }
     const commentResponse = await octokit.issues.createComment({
       owner,
       repo,
       issue_number: pr.number,
-      body: 'Hello there'
+      body: 'Hello there 2'
     })
     core.debug(commentResponse.data.url)
+    core.saveState('commentId', commentResponse.data.id)
   } catch (error) {
     core.setFailed(error.message)
   }
