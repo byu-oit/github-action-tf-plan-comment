@@ -3,12 +3,15 @@ import * as github from '@actions/github'
 
 async function run(): Promise<void> {
   try {
+    core.debug('got inside the action')
     const issue = github.context.payload.issue
     if (!issue) return
 
+    core.debug('got issue')
     const token = process.env['GITHUB_TOKEN']
     if (!token) return
 
+    core.debug('got token')
     const octokit = github.getOctokit(token)
     const nwo = process.env['GITHUB_REPOSITORY'] || '/'
     const [owner, repo] = nwo.split('/')

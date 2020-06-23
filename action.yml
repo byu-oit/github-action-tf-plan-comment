@@ -1,10 +1,10 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+name: 'Terraform Plan Comment'
+description: 'Creates a comment on a pull request with the terraform plan'
+author: 'Brigham Young University'
+#inputs:
+#  myInput:              # change this
+#    description: 'input description here'
+#    default: 'default value if applicable'
 runs:
   using: 'node12'
   main: 'dist/index.js'

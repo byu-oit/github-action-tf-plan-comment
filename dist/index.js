@@ -951,12 +951,15 @@ const github = __importStar(__webpack_require__(469));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug('got inside the action');
             const issue = github.context.payload.issue;
             if (!issue)
                 return;
+            core.debug('got issue');
             const token = process.env['GITHUB_TOKEN'];
             if (!token)
                 return;
+            core.debug('got token');
             const octokit = github.getOctokit(token);
             const nwo = process.env['GITHUB_REPOSITORY'] || '/';
             const [owner, repo] = nwo.split('/');
