@@ -25,34 +25,31 @@ async function run(): Promise<void> {
     for (const resourceChange of terraformPlan.resource_changes) {
       switch (resourceChange.change.actions) {
         case [Action.create]:
-          toCreate.push(resourceChange)
+          toCreate.push(`${resourceChange.type} ${resourceChange.name}`)
           break
         case [Action.delete]:
-          toDelete.push(resourceChange)
+          toDelete.push(`${resourceChange.type} ${resourceChange.name}`)
           break
         case [Action.delete, Action.create]:
         case [Action.create, Action.delete]:
-          toReplace.push(resourceChange)
+          toReplace.push(`${resourceChange.type} ${resourceChange.name}`)
           break
         case [Action.update]:
-          toUpdate.push(resourceChange)
+          toUpdate.push(`${resourceChange.type} ${resourceChange.name}`)
           break
       }
     }
 
+    core.debug(`toCreate: ${toCreate}`)
+    core.debug(`toUpdate: ${toUpdate}`)
+    core.debug(`toReplace: ${toReplace}`)
+    core.debug(`toDelete: ${toDelete}`)
+
     let body = `${commentPrefix}\n`
-    body += `Terraform will create: ${toCreate.map(
-      value => `${value.type} ${value.name}`
-    )}\n`
-    body += `Terraform will update: ${toUpdate.map(
-      value => `${value.type} ${value.name}`
-    )}\n`
-    body += `Terraform will replace (delete then create): ${toReplace.map(
-      value => `${value.type} ${value.name}`
-    )}\n`
-    body += `Terraform will delete: ${toDelete.map(
-      value => `${value.type} ${value.name}`
-    )}\n`
+    body += `Terraform will create: ${toCreate}\n`
+    body += `Terraform will update: ${toUpdate}\n`
+    body += `Terraform will replace (delete then create): ${toReplace}\n`
+    body += `Terraform will delete: ${toDelete}\n`
     // TODO add link to workflow in the comment
 
     const token = core.getInput('github_token')
