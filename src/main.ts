@@ -20,11 +20,9 @@ async function run(): Promise<void> {
     )
 
     const token = core.getInput('github_token')
-    core.debug('got token')
     const nwo = process.env['GITHUB_REPOSITORY'] || '/'
     const [owner, repo] = nwo.split('/')
     const octokit = github.getOctokit(token)
-    core.debug(`owner: ${owner}, repo: ${repo}`)
 
     const toCreate = []
     const toDelete = []
@@ -58,28 +56,28 @@ async function run(): Promise<void> {
 
     let body = `${commentPrefix}\n`
     if (toCreate.length > 0) {
-      body += `will create: \n`
+      body += `will create ${toCreate.length} resources: \n`
       for (const resource of toCreate) {
         body += `- ${resource}`
       }
       body += '\n\n'
     }
     if (toUpdate.length > 0) {
-      body += `will update: \n`
+      body += `will update ${toUpdate.length} resources: \n`
       for (const resource of toUpdate) {
         body += `- ${resource}`
       }
       body += '\n\n'
     }
     if (toReplace.length > 0) {
-      body += `will replace (**delete** then create): \n`
+      body += `will replace (**delete** then create) ${toReplace.length} resources: \n`
       for (const resource of toReplace) {
         body += `- ${resource}`
       }
       body += '\n\n'
     }
     if (toDelete.length > 0) {
-      body += `will **delete**: \n`
+      body += `will **delete** ${toDelete.length} resources: \n`
       for (const resource of toDelete) {
         body += `- ${resource}`
       }
@@ -93,7 +91,7 @@ async function run(): Promise<void> {
     ) {
       body += 'No changes'
     } else {
-      body += `[see details](https://github.com/${owner}/${repo}/runs/${process.env['GITHUB_RUN_ID']})`
+      body += `[see details](https://github.com/${owner}/${repo}/runs/${process.env['GITHUB_ACTION']})`
     }
 
     // find previous comment if it exists
