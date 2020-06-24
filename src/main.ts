@@ -18,8 +18,11 @@ async function run(): Promise<void> {
     core.debug('got pull request')
 
     const jsonFileName = core.getInput('terraform_plan_json_file')
+    core.debug(`got fileName: ${jsonFileName}`)
     const json = fs.readFileSync(jsonFileName, 'utf8')
+    core.debug(`got json:\n${json}`)
     const terraformPlan: TerraformPlan = JSON.parse(json)
+    core.debug('parsed json')
     const token = core.getInput('github_token')
     const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1')
 

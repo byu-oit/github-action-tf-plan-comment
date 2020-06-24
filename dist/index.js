@@ -955,8 +955,11 @@ async function run() {
         }
         core.debug('got pull request');
         const jsonFileName = core.getInput('terraform_plan_json_file');
+        core.debug(`got fileName: ${jsonFileName}`);
         const json = fs_1.default.readFileSync(jsonFileName, 'utf8');
+        core.debug(`got json:\n${json}`);
         const terraformPlan = JSON.parse(json);
+        core.debug('parsed json');
         const token = core.getInput('github_token');
         const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1');
         const commenter = new PlanCommenter(token, runId, pr);
