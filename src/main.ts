@@ -91,13 +91,8 @@ async function run(): Promise<void> {
     ) {
       body += 'No changes'
     } else {
-      const workflowRun = await octokit.actions.getWorkflowRun({
-        owner,
-        repo,
-        run_id: parseInt(process.env['GITHUB_RUN_ID'] || '0')
-      })
-      core.debug(`workflowRun: ${JSON.stringify(workflowRun)}`)
-      body += `[see details](https://github.com/${owner}/${repo}/runs/${workflowRun.data.id})`
+      // TODO find a way to link directly to job/step
+      body += `[see details](https://github.com/${owner}/${repo}/actions/runs/${process.env['GITHUB_RUN_ID']})`
     }
 
     // find previous comment if it exists
