@@ -967,7 +967,7 @@ class PlanCommenter {
         this.pr = pr;
     }
     async makePlanComment(terraformPlan) {
-        const body = this.planComment(terraformPlan);
+        const body = await this.planComment(terraformPlan);
         // find previous comment if it exists
         const comments = await this.octokit.issues.listComments({
             ...github.context.repo,
@@ -1001,7 +1001,7 @@ class PlanCommenter {
             return createdComment.data.id;
         }
     }
-    planComment(terraformPlan) {
+    async planComment(terraformPlan) {
         const toCreate = [];
         const toDelete = [];
         const toReplace = [];
@@ -1044,7 +1044,7 @@ class PlanCommenter {
             body += 'No changes';
         }
         else {
-            body += `[see details](${this.linkToWorkflowJob()})`;
+            body += `[see details](${await this.linkToWorkflowJob()})`;
         }
         return body;
     }
