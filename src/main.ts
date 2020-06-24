@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import fs from 'fs'
 import {GitHub} from '@actions/github/lib/utils'
 import {Action, PullRequest, TerraformPlan} from './types'
 
@@ -16,7 +17,9 @@ async function run(): Promise<void> {
     }
     core.debug('got pull request')
 
-    const terraformPlan: TerraformPlan = JSON.parse(core.getInput('terraform_plan_json'))
+    const jsonFileName = core.getInput('terraform_plan_json_file')
+    const json = fs.readFileSync(jsonFileName, 'utf8')
+    const terraformPlan: TerraformPlan = JSON.parse(json)
     const token = core.getInput('github_token')
     const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1')
 

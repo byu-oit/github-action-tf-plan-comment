@@ -5,9 +5,9 @@ inputs:
   github_token:
     required: true
     description: 'github token'
-  terraform_plan_json:
+  terraform_plan_json_file:
     required: true
-    description: JSON of the terraform plan
+    description: JSON file of the terraform plan
 runs:
   using: 'node12'
   main: 'dist/index.js'

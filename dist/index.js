@@ -936,9 +936,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
+const fs_1 = __importDefault(__webpack_require__(747));
 const types_1 = __webpack_require__(251);
 const commentPrefix = '## Terraform Plan:';
 async function run() {
@@ -950,7 +954,9 @@ async function run() {
             return;
         }
         core.debug('got pull request');
-        const terraformPlan = JSON.parse(core.getInput('terraform_plan_json'));
+        const jsonFileName = core.getInput('terraform_plan_json_file');
+        const json = fs_1.default.readFileSync(jsonFileName, 'utf8');
+        const terraformPlan = JSON.parse(json);
         const token = core.getInput('github_token');
         const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1');
         const commenter = new PlanCommenter(token, runId, pr);
