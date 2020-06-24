@@ -12,12 +12,34 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: |
-        npm install
-        npm run all
-  test: # make sure the action works on a clean machine without building
+        yarn install
+        yarn run all
+  test: # make sure the action works on a clean machine without building only on PRs
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - uses: ./
-      with: 
-        milliseconds: 1000
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        terraform_plan_json: |
+          {
+            "resource_changes": [
+              {
+                "address": "module.app.module.database.aws_db_instance.database",
+                "type": "aws_db_instance",
+                "name": "database",
+                "change": {
+                  "actions": ["delete"]
+                }
+              },
+              {
+                "address": "module.app.aws_security_group_rule.db_access",
+                "type": "aws_security_group_rule",
+                "name": "db_access",
+                "change": {
+                  "actions": ["delete", "create"]
+                }
+              }
+            ]
+          }
