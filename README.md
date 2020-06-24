@@ -21,14 +21,15 @@ jobs:
     # ... 
     - name: Terraform Plan JSON
       id: json_plan
-      steps:
-      - terraform show -json plan
+      run: terraform show -json plan
     - name: Comment Terraform Plan
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         terraform_plan_json: ${{ steps.json_plan.outputs.stdout }}
 ```
+
+**Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you 
 
 This action will create a comment on your PR like:
 
