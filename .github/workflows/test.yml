@@ -14,7 +14,8 @@ jobs:
     - run: |
         yarn install
         yarn run all
-  test: # make sure the action works on a clean machine without building
+  test: # make sure the action works on a clean machine without building only on PRs
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
