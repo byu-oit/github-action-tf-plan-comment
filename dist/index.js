@@ -955,9 +955,7 @@ async function run() {
         }
         core.debug('got pull request');
         const jsonFileName = core.getInput('terraform_plan_json_file');
-        core.debug(`got fileName: ${jsonFileName}`);
         const json = fs_1.default.readFileSync(jsonFileName, 'utf8');
-        core.debug(`got json:\n${json}`);
         const terraformPlan = JSON.parse(json);
         core.debug('parsed json');
         const token = core.getInput('github_token');
@@ -1016,9 +1014,9 @@ class PlanCommenter {
         const toReplace = [];
         const toUpdate = [];
         for (const resourceChange of terraformPlan.resource_changes) {
-            core.debug(`resource: ${JSON.stringify(resourceChange)}`);
             const actions = resourceChange.change.actions;
             const resourceName = `${resourceChange.type} - ${resourceChange.name}`;
+            core.debug(`resource: ${resourceName}, actions: ${actions}`);
             if (actions.length === 1 && actions.includes(types_1.Action.create)) {
                 toCreate.push(resourceName);
             }
@@ -1033,7 +1031,7 @@ class PlanCommenter {
             else if (actions.length === 1 && actions.includes(types_1.Action.update)) {
                 toUpdate.push(resourceName);
             }
-            else {
+            else if (!actions.includes(types_1.Action['no-op'])) {
                 core.debug(`Not found? ${actions}`);
             }
         }

@@ -19,17 +19,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # ... 
+    - name: Terraform Setup
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.tf_version }}
+        terraform_wrapper: false
+    # terraform init
+    # terraform plan
     - name: Terraform Plan JSON
       id: json_plan
-      run: terraform show -json plan
+      run: terraform show -json plan > plan.json
     - name: Comment Terraform Plan
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_json: ${{ steps.json_plan.outputs.stdout }}
+        terraform_plan_json_file: plan.json
 ```
 
-**Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you 
+**Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you.
+Also the setup-terraform action by default puts a wrapper around the stdout of commands, so trying to use `terraform show -json > plan.json` will save more than just the json output to the json file.
+We disable the wrapper in this example so that you can pipe the output to a file.  
 
 This action will create a comment on your PR like:
 

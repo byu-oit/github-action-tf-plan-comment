@@ -18,9 +18,7 @@ async function run(): Promise<void> {
     core.debug('got pull request')
 
     const jsonFileName = core.getInput('terraform_plan_json_file')
-    core.debug(`got fileName: ${jsonFileName}`)
     const json = fs.readFileSync(jsonFileName, 'utf8')
-    core.debug(`got json:\n${json}`)
     const terraformPlan: TerraformPlan = JSON.parse(json)
     core.debug('parsed json')
     const token = core.getInput('github_token')
@@ -84,9 +82,9 @@ class PlanCommenter {
     const toReplace = []
     const toUpdate = []
     for (const resourceChange of terraformPlan.resource_changes) {
-      core.debug(`resource: ${JSON.stringify(resourceChange)}`)
       const actions = resourceChange.change.actions
       const resourceName = `${resourceChange.type} - ${resourceChange.name}`
+      core.debug(`resource: ${resourceName}, actions: ${actions}`)
       if (actions.length === 1 && actions.includes(Action.create)) {
         toCreate.push(resourceName)
       } else if (actions.length === 1 && actions.includes(Action.delete)) {
@@ -99,7 +97,7 @@ class PlanCommenter {
         toReplace.push(resourceName)
       } else if (actions.length === 1 && actions.includes(Action.update)) {
         toUpdate.push(resourceName)
-      } else {
+      } else if (!actions.includes(Action['no-op'])) {
         core.debug(`Not found? ${actions}`)
       }
     }
