@@ -3154,7 +3154,7 @@
                     "provider_name": "aws.virginia",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:acm:us-east-1:***:certificate/bfdbbdd8-2245-4b87-9bdb-a6f36dee03f0",
+                      "arn": "arn:aws:acm:us-east-1:***:certificate/0fake1d",
                       "domain": "fake_domain.amazon.byu.edu",
                       "id": "2020-06-24 19:40:11.087617241 +0000 UTC",
                       "key_types": null,
@@ -3233,7 +3233,7 @@
                       "role_id": null,
                       "role_name": null,
                       "tags": {},
-                      "unique_id": "AROAQKWMX5RQBRYXAHQVY"
+                      "unique_id": "0fake1d"
                     }
                   },
                   {
@@ -3257,7 +3257,7 @@
                       "role_id": null,
                       "role_name": null,
                       "tags": {},
-                      "unique_id": "AROAQKWMX5RQFWZGDCD3I"
+                      "unique_id": "0fake1d"
                     }
                   },
                   {
@@ -3281,7 +3281,7 @@
                       "role_id": null,
                       "role_name": null,
                       "tags": {},
-                      "unique_id": "AROAQKWMX5RQIZFBVRSAE"
+                      "unique_id": "0fake1d"
                     }
                   },
                   {
@@ -3308,17 +3308,17 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "caller_reference": "terraform-20191018192825296800000001",
+                      "caller_reference": "terraform-0fake1d",
                       "comment": "Managed by Terraform",
                       "id": "Z0FAKE1D",
                       "linked_service_description": null,
                       "linked_service_principal": null,
                       "name": "fake_domain.amazon.byu.edu.",
                       "name_servers": [
-                        "ns-1069.awsdns-05.org",
-                        "ns-1594.awsdns-07.co.uk",
-                        "ns-190.awsdns-23.com",
-                        "ns-890.awsdns-47.net"
+                        "fake.org",
+                        "fake.co.uk",
+                        "fake.com",
+                        "fake.net"
                       ],
                       "private_zone": false,
                       "resource_record_set_count": 17,
@@ -3340,16 +3340,16 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:***:security-group/sg-0b4eb66efead1d1e1",
+                      "arn": "arn:aws:ec2:us-west-2:***:security-group/sg-0fake1d",
                       "description": "Used to connect to ORACLE Xinetd Server in Platform Account - Managed by Terraform",
                       "filter": null,
-                      "id": "sg-0b4eb66efead1d1e1",
+                      "id": "sg-0fake1d",
                       "name": "vpn_oregon_dev_xinetd",
                       "tags": {
                         "IAC": "Terraform",
                         "Name": "ORACLE/CMAN Xinetd Security Group"
                       },
-                      "vpc_id": "vpc-07016e8396cc0d094"
+                      "vpc_id": "vpc-0fake1d"
                     }
                   },
                   {
@@ -3360,7 +3360,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:***:security-group/sg-000968b3647ca2fad",
+                      "arn": "arn:aws:ec2:us-west-2:***:security-group/sg-0fake1d",
                       "description": "Security Group for RDS - Managed by Terraform",
                       "filter": [
                         {
@@ -3376,7 +3376,7 @@
                           ]
                         }
                       ],
-                      "id": "sg-000968b3647ca2fad",
+                      "id": "sg-0fake1d",
                       "name": "rds_security_group_oit_oregon_dev",
                       "tags": {
                         "IAC": "Terraform",
@@ -3393,7 +3393,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:***:security-group/sg-02a5b89b0eef89932",
+                      "arn": "arn:aws:ec2:us-west-2:***:security-group/sg-0fake1d",
                       "description": "Security Group for SSH/RDP - Managed by Terraform",
                       "filter": [
                         {
@@ -3409,7 +3409,7 @@
                           ]
                         }
                       ],
-                      "id": "sg-02a5b89b0eef89932",
+                      "id": "sg-0fake1d",
                       "name": "ssh_rdp_sg_oit_oregon_dev",
                       "tags": {
                         "IAC": "Terraform",
@@ -3430,7 +3430,7 @@
                       "id": "acsParameters",
                       "name": "acsParameters",
                       "type": "String",
-                      "value": "{\"/acs/acm/zone-cert-arn\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/acm/zone-cert-id\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/dns/zone-id\": \"Z0FAKE1D\", \"/acs/dns/zone-name\": \"fake_domain.amazon.byu.edu.\", \"/acs/git/token\": \"27c8476d8a501f2f4f789ece25e5418b2bad46c0\", \"/acs/iam/iamRolePermissionBoundary\": \"arn:aws:iam::***:policy/iamRolePermissionBoundary\", \"/acs/iam/iamUserPermissionBoundary\": \"arn:aws:iam::***:policy/iamUserPermissionBoundary\", \"/acs/vpc/oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/oit-oregon-dev-data-a\": \"subnet-0f4cb0342b0732de1\", \"/acs/vpc/oit-oregon-dev-data-b\": \"subnet-083fda44af54ef47a\", \"/acs/vpc/oit-oregon-dev-private-b\": \"subnet-0fake1d\", \"/acs/vpc/sshrdp_sg\": \"ssh_rdp_sg_oit_oregon_dev\", \"/acs/vpc/vpc-name\": \"oit-oregon-dev\", \"/acs/vpc/vpn-oit-oregon-dev-data-b\": \"subnet-098f9ec9e3cd13db8\", \"/acs/vpc/vpn-oit-oregon-dev-private-b\": \"subnet-0069c0ca4522027f5\", \"/acs/vpc/xinetd-sg-id\": \"sg-0b4eb66efead1d1e1\", \"/acs/vpc/oit-oregon-dev-public-a\": \"subnet-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-b\": \"subnet-0fake1d\", \"/acs/vpc/rds_sg\": \"rds_security_group_oit_oregon_dev\", \"/acs/vpc/rds_vpn_sg\": \"rds_security_group_vpn_oit_oregon_dev\", \"/acs/vpc/sshrdp_vpn_sg\": \"ssh_rdp_sg_vpn_oit_oregon_dev\", \"/acs/vpc/vpn-oit-oregon-dev\": \"vpc-07016e8396cc0d094\", \"/acs/vpc/vpn-oit-oregon-dev-data-a\": \"subnet-04ef6dfe521d80527\", \"/acs/vpc/vpn-oit-oregon-dev-private-a\": \"subnet-04e5fcbaff98d47d4\", \"/acs/vpc/vpn-oit-oregon-dev-public-a\": \"subnet-0940eb9b3c9f477db\", \"/acs/vpc/vpn-oit-oregon-dev-public-b\": \"subnet-0db85a6e19afc78a9\", \"/acs/vpc/oit-oregon-dev-private-a\": \"subnet-0fake1d\", \"/acs/vpc/vpn-vpc-name\": \"vpn-oit-oregon-dev\"}",
+                      "value": "{\"/acs/acm/zone-cert-arn\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/acm/zone-cert-id\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/dns/zone-id\": \"Z0FAKE1D\", \"/acs/dns/zone-name\": \"fake_domain.amazon.byu.edu.\", \"/acs/git/token\": \"faketoken\", \"/acs/iam/iamRolePermissionBoundary\": \"arn:aws:iam::***:policy/iamRolePermissionBoundary\", \"/acs/iam/iamUserPermissionBoundary\": \"arn:aws:iam::***:policy/iamUserPermissionBoundary\", \"/acs/vpc/oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/oit-oregon-dev-data-a\": \"subnet-0f4cb0342b0732de1\", \"/acs/vpc/oit-oregon-dev-data-b\": \"subnet-083fda44af54ef47a\", \"/acs/vpc/oit-oregon-dev-private-b\": \"subnet-0fake1d\", \"/acs/vpc/sshrdp_sg\": \"ssh_rdp_sg_oit_oregon_dev\", \"/acs/vpc/vpc-name\": \"oit-oregon-dev\", \"/acs/vpc/vpn-oit-oregon-dev-data-b\": \"subnet-098f9ec9e3cd13db8\", \"/acs/vpc/vpn-oit-oregon-dev-private-b\": \"subnet-0069c0ca4522027f5\", \"/acs/vpc/xinetd-sg-id\": \"sg-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-a\": \"subnet-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-b\": \"subnet-0fake1d\", \"/acs/vpc/rds_sg\": \"rds_security_group_oit_oregon_dev\", \"/acs/vpc/rds_vpn_sg\": \"rds_security_group_vpn_oit_oregon_dev\", \"/acs/vpc/sshrdp_vpn_sg\": \"ssh_rdp_sg_vpn_oit_oregon_dev\", \"/acs/vpc/vpn-oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/vpn-oit-oregon-dev-data-a\": \"subnet-04ef6dfe521d80527\", \"/acs/vpc/vpn-oit-oregon-dev-private-a\": \"subnet-04e5fcbaff98d47d4\", \"/acs/vpc/vpn-oit-oregon-dev-public-a\": \"subnet-0940eb9b3c9f477db\", \"/acs/vpc/vpn-oit-oregon-dev-public-b\": \"subnet-0db85a6e19afc78a9\", \"/acs/vpc/oit-oregon-dev-private-a\": \"subnet-0fake1d\", \"/acs/vpc/vpn-vpc-name\": \"vpn-oit-oregon-dev\"}",
                       "version": 126331,
                       "with_decryption": true
                     }
@@ -3444,7 +3444,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:867441714531:subnet/subnet-0f4cb0342b0732de1",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0f4cb0342b0732de1",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2b",
                       "availability_zone_id": "usw2-az1",
@@ -3456,7 +3456,7 @@
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": false,
                       "outpost_arn": "",
-                      "owner_id": "867441714531",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev-data-a"
@@ -3473,7 +3473,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:867441714531:subnet/subnet-083fda44af54ef47a",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-083fda44af54ef47a",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2a",
                       "availability_zone_id": "usw2-az2",
@@ -3485,7 +3485,7 @@
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": false,
                       "outpost_arn": "",
-                      "owner_id": "867441714531",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev-data-b"
@@ -3502,7 +3502,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:867441714531:subnet/subnet-0fake1d",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0fake1d",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2b",
                       "availability_zone_id": "usw2-az1",
@@ -3514,7 +3514,7 @@
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": false,
                       "outpost_arn": "",
-                      "owner_id": "867441714531",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev-private-a"
@@ -3531,7 +3531,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:867441714531:subnet/subnet-0fake1d",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0fake1d",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2a",
                       "availability_zone_id": "usw2-az2",
@@ -3543,7 +3543,7 @@
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": false,
                       "outpost_arn": "",
-                      "owner_id": "867441714531",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev-private-b"
@@ -3560,7 +3560,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:867441714531:subnet/subnet-0fake1d",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0fake1d",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2b",
                       "availability_zone_id": "usw2-az1",
@@ -3572,7 +3572,7 @@
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": true,
                       "outpost_arn": "",
-                      "owner_id": "867441714531",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev-public-a"
@@ -3589,7 +3589,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:867441714531:subnet/subnet-0fake1d",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0fake1d",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2a",
                       "availability_zone_id": "usw2-az2",
@@ -3601,7 +3601,7 @@
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": true,
                       "outpost_arn": "",
-                      "owner_id": "867441714531",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev-public-b"
@@ -3621,7 +3621,7 @@
                       "cidr_block": "172.17.0.0/16",
                       "cidr_block_associations": [
                         {
-                          "association_id": "vpc-cidr-assoc-0b5bc60464f6096ad",
+                          "association_id": "vpc-cidr-assoc-0face1d",
                           "cidr_block": "172.17.0.0/16",
                           "state": "associated"
                         }
@@ -3635,8 +3635,8 @@
                       "instance_tenancy": "default",
                       "ipv6_association_id": null,
                       "ipv6_cidr_block": null,
-                      "main_route_table_id": "rtb-0055fed2722008648",
-                      "owner_id": "867441714531",
+                      "main_route_table_id": "rtb-0face1d",
+                      "owner_id": "1234",
                       "state": "available",
                       "tags": {
                         "Name": "oit-oregon-dev"
