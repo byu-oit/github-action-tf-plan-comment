@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {Action, TerraformPlan} from './types'
+import {GitHub} from '@actions/github/lib/utils'
+import {Action, PullRequest, TerraformPlan} from './types'
 
 const commentPrefix = '## Terraform Plan:'
 
@@ -15,15 +16,63 @@ async function run(): Promise<void> {
     }
     core.debug('got pull request')
 
-    const terraformPlan: TerraformPlan = JSON.parse(
-      core.getInput('terraform_plan_json')
-    )
-
+    const terraformPlan: TerraformPlan = JSON.parse(core.getInput('terraform_plan_json'))
     const token = core.getInput('github_token')
-    const nwo = process.env['GITHUB_REPOSITORY'] || '/'
-    const [owner, repo] = nwo.split('/')
-    const octokit = github.getOctokit(token)
+    const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1')
 
+    const commenter = new PlanCommenter(token, runId, pr)
+    await commenter.makePlanComment(terraformPlan)
+  } catch (error) {
+    core.setFailed(error.message)
+  }
+}
+
+class PlanCommenter {
+  octokit: InstanceType<typeof GitHub>
+  runId: number
+  pr: PullRequest
+
+  constructor(token: string, runId: number, pr: PullRequest) {
+    this.octokit = github.getOctokit(token)
+    this.runId = runId
+    this.pr = pr
+  }
+
+  async makePlanComment(terraformPlan: TerraformPlan): Promise<number> {
+    const body = this.planComment(terraformPlan)
+    // find previous comment if it exists
+    const comments = await this.octokit.issues.listComments({
+      ...github.context.repo,
+      issue_number: this.pr.number
+    })
+    let previousCommentId: number | null = null
+    for (const comment of comments.data) {
+      if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(commentPrefix)) {
+        previousCommentId = comment.id
+      }
+    }
+    if (previousCommentId) {
+      // update the previous comment
+      const updatedComment = await this.octokit.issues.updateComment({
+        ...github.context.repo,
+        issue_number: this.pr.number,
+        comment_id: previousCommentId,
+        body
+      })
+      core.info(`Updated existing comment: ${updatedComment.data.html_url}`)
+      return updatedComment.data.id
+    } else {
+      // create new comment if previous comment does not exist
+      const createdComment = await this.octokit.issues.createComment({
+        ...github.context.repo,
+        issue_number: this.pr.number,
+        body
+      })
+      core.info(`Created comment: ${createdComment.data.html_url}`)
+      return createdComment.data.id
+    }
+  }
+  planComment(terraformPlan: TerraformPlan): string {
     const toCreate = []
     const toDelete = []
     const toReplace = []
@@ -55,34 +104,10 @@ async function run(): Promise<void> {
     core.debug(`toDelete: ${toDelete}`)
 
     let body = `${commentPrefix}\n`
-    if (toCreate.length > 0) {
-      body += `will create ${toCreate.length} resources: \n`
-      for (const resource of toCreate) {
-        body += `- ${resource}`
-      }
-      body += '\n\n'
-    }
-    if (toUpdate.length > 0) {
-      body += `will update ${toUpdate.length} resources: \n`
-      for (const resource of toUpdate) {
-        body += `- ${resource}`
-      }
-      body += '\n\n'
-    }
-    if (toReplace.length > 0) {
-      body += `will replace (**delete** then create) ${toReplace.length} resources: \n`
-      for (const resource of toReplace) {
-        body += `- ${resource}`
-      }
-      body += '\n\n'
-    }
-    if (toDelete.length > 0) {
-      body += `will **delete** ${toDelete.length} resources: \n`
-      for (const resource of toDelete) {
-        body += `- ${resource}`
-      }
-      body += '\n\n'
-    }
+    body += PlanCommenter.resourcesToChangeSection('create', toCreate)
+    body += PlanCommenter.resourcesToChangeSection('update', toUpdate)
+    body += PlanCommenter.resourcesToChangeSection('**delete**', toDelete)
+    body += PlanCommenter.resourcesToChangeSection('**replace (delete then create)**', toReplace)
     if (
       toCreate.length === 0 &&
       toUpdate.length === 0 &&
@@ -91,47 +116,30 @@ async function run(): Promise<void> {
     ) {
       body += 'No changes'
     } else {
-      // TODO find a way to link directly to job/step
-      body += `[see details](https://github.com/${owner}/${repo}/actions/runs/${process.env['GITHUB_RUN_ID']})`
+      body += `[see details](${this.linkToWorkflowJob()})`
     }
+    return body
+  }
 
-    // find previous comment if it exists
-    const comments = await octokit.issues.listComments({
-      owner,
-      repo,
-      issue_number: pr.number
-    })
-    let previousCommentId: number | null = null
-    for (const comment of comments.data) {
-      if (
-        comment.user.login === 'github-actions[bot]' &&
-        comment.body.startsWith(commentPrefix)
-      ) {
-        previousCommentId = comment.id
+  private static resourcesToChangeSection(changeType: string, list: string[]): string {
+    let str = ''
+    if (list.length > 0) {
+      str += `will ${changeType} ${list.length} resource${list.length > 1 ? 's' : ''}: \n`
+      for (const resource of list) {
+        str += `- ${resource}`
       }
+      str += '\n\n'
     }
-    if (previousCommentId) {
-      // update the previous comment
-      core.debug(`Updating existing comment ${previousCommentId}`)
-      await octokit.issues.updateComment({
-        owner,
-        repo,
-        issue_number: pr.number,
-        comment_id: previousCommentId,
-        body
-      })
-    } else {
-      // create new comment if previous comment does not exist
-      core.debug('Creating new comment')
-      await octokit.issues.createComment({
-        owner,
-        repo,
-        issue_number: pr.number,
-        body
-      })
-    }
-  } catch (error) {
-    core.setFailed(error.message)
+    return str
+  }
+
+  // TODO find a way to link directly to job/step. I can't seem to figure out which job is running without hard coding in job names into each of our repos that use this action
+  private async linkToWorkflowJob(): Promise<string> {
+    const workflow = await this.octokit.actions.getWorkflowRun({
+      ...github.context.repo,
+      run_id: this.runId
+    })
+    return workflow.data.html_url
   }
 }
 

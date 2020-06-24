@@ -21,3 +21,9 @@ export enum Action {
   'update' = 'update',
   'delete' = 'delete'
 }
+
+export interface PullRequest {
+  number: number
+  html_url?: string
+  body?: string
+}

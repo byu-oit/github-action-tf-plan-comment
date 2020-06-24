@@ -962,117 +962,111 @@ function run() {
             core.debug('got pull request');
             const terraformPlan = JSON.parse(core.getInput('terraform_plan_json'));
             const token = core.getInput('github_token');
-            const nwo = process.env['GITHUB_REPOSITORY'] || '/';
-            const [owner, repo] = nwo.split('/');
-            const octokit = github.getOctokit(token);
-            const toCreate = [];
-            const toDelete = [];
-            const toReplace = [];
-            const toUpdate = [];
-            for (const resourceChange of terraformPlan.resource_changes) {
-                core.debug(`resource: ${JSON.stringify(resourceChange)}`);
-                const actions = resourceChange.change.actions;
-                const resourceName = `${resourceChange.type} - ${resourceChange.name}`;
-                if (actions.length === 1 && actions.includes(types_1.Action.create)) {
-                    toCreate.push(resourceName);
-                }
-                else if (actions.length === 1 && actions.includes(types_1.Action.delete)) {
-                    toDelete.push(resourceName);
-                }
-                else if (actions.length === 2 &&
-                    actions.includes(types_1.Action.delete) &&
-                    actions.includes(types_1.Action.create)) {
-                    toReplace.push(resourceName);
-                }
-                else if (actions.length === 1 && actions.includes(types_1.Action.update)) {
-                    toUpdate.push(resourceName);
-                }
-                else {
-                    core.debug(`Not found? ${actions}`);
-                }
-            }
-            core.debug(`toCreate: ${toCreate}`);
-            core.debug(`toUpdate: ${toUpdate}`);
-            core.debug(`toReplace: ${toReplace}`);
-            core.debug(`toDelete: ${toDelete}`);
-            let body = `${commentPrefix}\n`;
-            if (toCreate.length > 0) {
-                body += `will create ${toCreate.length} resources: \n`;
-                for (const resource of toCreate) {
-                    body += `- ${resource}`;
-                }
-                body += '\n\n';
-            }
-            if (toUpdate.length > 0) {
-                body += `will update ${toUpdate.length} resources: \n`;
-                for (const resource of toUpdate) {
-                    body += `- ${resource}`;
-                }
-                body += '\n\n';
-            }
-            if (toReplace.length > 0) {
-                body += `will replace (**delete** then create) ${toReplace.length} resources: \n`;
-                for (const resource of toReplace) {
-                    body += `- ${resource}`;
-                }
-                body += '\n\n';
-            }
-            if (toDelete.length > 0) {
-                body += `will **delete** ${toDelete.length} resources: \n`;
-                for (const resource of toDelete) {
-                    body += `- ${resource}`;
-                }
-                body += '\n\n';
-            }
-            if (toCreate.length === 0 &&
-                toUpdate.length === 0 &&
-                toReplace.length === 0 &&
-                toDelete.length === 0) {
-                body += 'No changes';
-            }
-            else {
-                // TODO find a way to link directly to job/step
-                body += `[see details](https://github.com/${owner}/${repo}/actions/runs/${process.env['GITHUB_RUN_ID']})`;
-            }
-            // find previous comment if it exists
-            const comments = yield octokit.issues.listComments({
-                owner,
-                repo,
-                issue_number: pr.number
-            });
-            let previousCommentId = null;
-            for (const comment of comments.data) {
-                if (comment.user.login === 'github-actions[bot]' &&
-                    comment.body.startsWith(commentPrefix)) {
-                    previousCommentId = comment.id;
-                }
-            }
-            if (previousCommentId) {
-                // update the previous comment
-                core.debug(`Updating existing comment ${previousCommentId}`);
-                yield octokit.issues.updateComment({
-                    owner,
-                    repo,
-                    issue_number: pr.number,
-                    comment_id: previousCommentId,
-                    body
-                });
-            }
-            else {
-                // create new comment if previous comment does not exist
-                core.debug('Creating new comment');
-                yield octokit.issues.createComment({
-                    owner,
-                    repo,
-                    issue_number: pr.number,
-                    body
-                });
-            }
+            const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1');
+            const commenter = new PlanCommenter(token, runId, pr);
+            yield commenter.makePlanComment(terraformPlan);
         }
         catch (error) {
             core.setFailed(error.message);
         }
     });
+}
+class PlanCommenter {
+    constructor(token, runId, pr) {
+        this.octokit = github.getOctokit(token);
+        this.runId = runId;
+        this.pr = pr;
+    }
+    makePlanComment(terraformPlan) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const body = this.planComment(terraformPlan);
+            // find previous comment if it exists
+            const comments = yield this.octokit.issues.listComments(Object.assign(Object.assign({}, github.context.repo), { issue_number: this.pr.number }));
+            let previousCommentId = null;
+            for (const comment of comments.data) {
+                if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(commentPrefix)) {
+                    previousCommentId = comment.id;
+                }
+            }
+            if (previousCommentId) {
+                // update the previous comment
+                const updatedComment = yield this.octokit.issues.updateComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: this.pr.number, comment_id: previousCommentId, body }));
+                core.info(`Updated existing comment: ${updatedComment.data.html_url}`);
+                return updatedComment.data.id;
+            }
+            else {
+                // create new comment if previous comment does not exist
+                const createdComment = yield this.octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: this.pr.number, body }));
+                core.info(`Created comment: ${createdComment.data.html_url}`);
+                return createdComment.data.id;
+            }
+        });
+    }
+    planComment(terraformPlan) {
+        const toCreate = [];
+        const toDelete = [];
+        const toReplace = [];
+        const toUpdate = [];
+        for (const resourceChange of terraformPlan.resource_changes) {
+            core.debug(`resource: ${JSON.stringify(resourceChange)}`);
+            const actions = resourceChange.change.actions;
+            const resourceName = `${resourceChange.type} - ${resourceChange.name}`;
+            if (actions.length === 1 && actions.includes(types_1.Action.create)) {
+                toCreate.push(resourceName);
+            }
+            else if (actions.length === 1 && actions.includes(types_1.Action.delete)) {
+                toDelete.push(resourceName);
+            }
+            else if (actions.length === 2 &&
+                actions.includes(types_1.Action.delete) &&
+                actions.includes(types_1.Action.create)) {
+                toReplace.push(resourceName);
+            }
+            else if (actions.length === 1 && actions.includes(types_1.Action.update)) {
+                toUpdate.push(resourceName);
+            }
+            else {
+                core.debug(`Not found? ${actions}`);
+            }
+        }
+        core.debug(`toCreate: ${toCreate}`);
+        core.debug(`toUpdate: ${toUpdate}`);
+        core.debug(`toReplace: ${toReplace}`);
+        core.debug(`toDelete: ${toDelete}`);
+        let body = `${commentPrefix}\n`;
+        body += PlanCommenter.resourcesToChangeSection('create', toCreate);
+        body += PlanCommenter.resourcesToChangeSection('update', toUpdate);
+        body += PlanCommenter.resourcesToChangeSection('**delete**', toDelete);
+        body += PlanCommenter.resourcesToChangeSection('**replace (delete then create)**', toReplace);
+        if (toCreate.length === 0 &&
+            toUpdate.length === 0 &&
+            toReplace.length === 0 &&
+            toDelete.length === 0) {
+            body += 'No changes';
+        }
+        else {
+            body += `[see details](${this.linkToWorkflowJob()})`;
+        }
+        return body;
+    }
+    static resourcesToChangeSection(changeType, list) {
+        let str = '';
+        if (list.length > 0) {
+            str += `will ${changeType} ${list.length} resource${list.length > 1 ? 's' : ''}: \n`;
+            for (const resource of list) {
+                str += `- ${resource}`;
+            }
+            str += '\n\n';
+        }
+        return str;
+    }
+    // TODO find a way to link directly to job/step. I can't seem to figure out which job is running without hard coding in job names into each of our repos that use this action
+    linkToWorkflowJob() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const workflow = yield this.octokit.actions.getWorkflowRun(Object.assign(Object.assign({}, github.context.repo), { run_id: this.runId }));
+            return workflow.data.html_url;
+        });
+    }
 }
 run();
 
