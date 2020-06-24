@@ -2,100 +2,68 @@
   <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
 </p>
 
-# Create a JavaScript Action using TypeScript
+# ![BYU logo](https://www.hscripts.com/freeimages/logos/university-logos/byu/byu-logo-clipart-128.gif) github-action-tf-plan-comment
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+GitHub Action to make a comment on a pull request with the proposed updated terraform plan
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+This action takes in a JSON representation of your terraform plan and creates a comment on the Pull Request (PR) with basic info about what the plan will create, update, replace, or delete.
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+**Note:** this action does not run terraform plan for you, you must pass in the plan as an input.
 
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Master
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run pack
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run pack
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml)])
-
+## Usage
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+on: push
+# ...
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # ... 
+    - name: Terraform Plan JSON
+      id: json_plan
+      steps:
+      - terraform show -json plan
+    - name: Comment Terraform Plan
+      uses: byu-oit/github-action-tf-plan-comment@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        terraform_plan_json: ${{ steps.json_plan.outputs.stdout }}
+    - run: mvn install
 ```
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
+This action will create a comment on your PR like:
 
-## Usage:
+> ## Terraform Plan:
+> will replace (delete then create) 1 resources:
+> - aws_security_group_rule - db_access
+> 
+> will delete 1 resources:
+> - aws_db_instance - database
+> 
+>[see details](link to the github action workflow)
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+
+## Inputs
+* `github_token` - (**required**) pass in the GitHub token to make comments on the PR
+* `terraform_plan_json` - (**required**) JSON representation of the terraform plan to be executed
+
+## Contributing
+Hopefully this is useful to others at BYU.
+Feel free to ask me some questions about it, but I make no promises about being able to commit time to support it.
+
+GitHub Actions will run the entry point from the action.yml.
+In our case, that happens to be /dist/index.js.
+
+Actions run from GitHub repos.
+We don't want to check in node_modules. Hence, we package the app using `yarn run pack`.
+
+### Modifying Source Code
+Just run `yarn install` locally.
+There aren't many files here, so hopefully it should be pretty straightforward.
+
+### Cutting new releases
+Push your code up to a feature branch.
+Create a pull request to the `v1` branch (if it's a non breaking change).
+
+After it's merged into the `v1` branch then, be sure to create a new GitHub release, following SemVer.
+Then merge `v1` into `master`.
