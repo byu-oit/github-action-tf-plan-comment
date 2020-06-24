@@ -772,7 +772,7 @@
                       "repo": "https://github.com/byu-oit/fake_app",
                       "team": "FAKE_TEAM"
                     },
-                    "unique_id": "AROAQKWMX5RQFY26MWWWF"
+                    "unique_id": "FAKE"
                   }
                 },
                 {
@@ -2482,7 +2482,7 @@
             "repo": "https://github.com/byu-oit/fake_app",
             "team": "FAKE_TEAM"
           },
-          "unique_id": "AROAQKWMX5RQFY26MWWWF"
+          "unique_id": "FAKE"
         },
         "after": {
           "arn": "arn:aws:iam::***:role/fake_app-dev-taskExecutionRole",
@@ -2502,7 +2502,7 @@
             "repo": "https://github.com/byu-oit/fake_app",
             "team": "FAKE_TEAM"
           },
-          "unique_id": "AROAQKWMX5RQFY26MWWWF"
+          "unique_id": "FAKE"
         },
         "after_unknown": {}
       }
@@ -3430,7 +3430,7 @@
                       "id": "acsParameters",
                       "name": "acsParameters",
                       "type": "String",
-                      "value": "{\"/acs/acm/zone-cert-arn\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/acm/zone-cert-id\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/dns/zone-id\": \"Z0FAKE1D\", \"/acs/dns/zone-name\": \"fake_domain.amazon.byu.edu.\", \"/acs/git/token\": \"faketoken\", \"/acs/iam/iamRolePermissionBoundary\": \"arn:aws:iam::***:policy/iamRolePermissionBoundary\", \"/acs/iam/iamUserPermissionBoundary\": \"arn:aws:iam::***:policy/iamUserPermissionBoundary\", \"/acs/vpc/oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/oit-oregon-dev-data-a\": \"subnet-0f4cb0342b0732de1\", \"/acs/vpc/oit-oregon-dev-data-b\": \"subnet-083fda44af54ef47a\", \"/acs/vpc/oit-oregon-dev-private-b\": \"subnet-0fake1d\", \"/acs/vpc/sshrdp_sg\": \"ssh_rdp_sg_oit_oregon_dev\", \"/acs/vpc/vpc-name\": \"oit-oregon-dev\", \"/acs/vpc/vpn-oit-oregon-dev-data-b\": \"subnet-098f9ec9e3cd13db8\", \"/acs/vpc/vpn-oit-oregon-dev-private-b\": \"subnet-0069c0ca4522027f5\", \"/acs/vpc/xinetd-sg-id\": \"sg-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-a\": \"subnet-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-b\": \"subnet-0fake1d\", \"/acs/vpc/rds_sg\": \"rds_security_group_oit_oregon_dev\", \"/acs/vpc/rds_vpn_sg\": \"rds_security_group_vpn_oit_oregon_dev\", \"/acs/vpc/sshrdp_vpn_sg\": \"ssh_rdp_sg_vpn_oit_oregon_dev\", \"/acs/vpc/vpn-oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/vpn-oit-oregon-dev-data-a\": \"subnet-04ef6dfe521d80527\", \"/acs/vpc/vpn-oit-oregon-dev-private-a\": \"subnet-04e5fcbaff98d47d4\", \"/acs/vpc/vpn-oit-oregon-dev-public-a\": \"subnet-0940eb9b3c9f477db\", \"/acs/vpc/vpn-oit-oregon-dev-public-b\": \"subnet-0db85a6e19afc78a9\", \"/acs/vpc/oit-oregon-dev-private-a\": \"subnet-0fake1d\", \"/acs/vpc/vpn-vpc-name\": \"vpn-oit-oregon-dev\"}",
+                      "value": "{\"/acs/acm/zone-cert-arn\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/acm/zone-cert-id\": \"arn:aws:acm:us-west-2:***:certificate/0fake1d\", \"/acs/dns/zone-id\": \"Z0FAKE1D\", \"/acs/dns/zone-name\": \"fake_domain.amazon.byu.edu.\", \"/acs/git/token\": \"faketoken\", \"/acs/iam/iamRolePermissionBoundary\": \"arn:aws:iam::***:policy/iamRolePermissionBoundary\", \"/acs/iam/iamUserPermissionBoundary\": \"arn:aws:iam::***:policy/iamUserPermissionBoundary\", \"/acs/vpc/oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/oit-oregon-dev-data-a\": \"subnet-0fake1d\", \"/acs/vpc/oit-oregon-dev-data-b\": \"subnet-0fake1d\", \"/acs/vpc/oit-oregon-dev-private-b\": \"subnet-0fake1d\", \"/acs/vpc/sshrdp_sg\": \"ssh_rdp_sg_oit_oregon_dev\", \"/acs/vpc/vpc-name\": \"oit-oregon-dev\", \"/acs/vpc/vpn-oit-oregon-dev-data-b\": \"subnet-098f9ec9e3cd13db8\", \"/acs/vpc/vpn-oit-oregon-dev-private-b\": \"subnet-0069c0ca4522027f5\", \"/acs/vpc/xinetd-sg-id\": \"sg-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-a\": \"subnet-0fake1d\", \"/acs/vpc/oit-oregon-dev-public-b\": \"subnet-0fake1d\", \"/acs/vpc/rds_sg\": \"rds_security_group_oit_oregon_dev\", \"/acs/vpc/rds_vpn_sg\": \"rds_security_group_vpn_oit_oregon_dev\", \"/acs/vpc/sshrdp_vpn_sg\": \"ssh_rdp_sg_vpn_oit_oregon_dev\", \"/acs/vpc/vpn-oit-oregon-dev\": \"vpc-0fake1d\", \"/acs/vpc/vpn-oit-oregon-dev-data-a\": \"subnet-04ef6dfe521d80527\", \"/acs/vpc/vpn-oit-oregon-dev-private-a\": \"subnet-04e5fcbaff98d47d4\", \"/acs/vpc/vpn-oit-oregon-dev-public-a\": \"subnet-0940eb9b3c9f477db\", \"/acs/vpc/vpn-oit-oregon-dev-public-b\": \"subnet-0db85a6e19afc78a9\", \"/acs/vpc/oit-oregon-dev-private-a\": \"subnet-0fake1d\", \"/acs/vpc/vpn-vpc-name\": \"vpn-oit-oregon-dev\"}",
                       "version": 126331,
                       "with_decryption": true
                     }
@@ -3444,14 +3444,14 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0f4cb0342b0732de1",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0fake1d",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2b",
                       "availability_zone_id": "usw2-az1",
                       "cidr_block": "172.17.192.0/19",
                       "default_for_az": false,
                       "filter": null,
-                      "id": "subnet-0f4cb0342b0732de1",
+                      "id": "subnet-0fake1d",
                       "ipv6_cidr_block": null,
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": false,
@@ -3473,14 +3473,14 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-083fda44af54ef47a",
+                      "arn": "arn:aws:ec2:us-west-2:1234:subnet/subnet-0fake1d",
                       "assign_ipv6_address_on_creation": false,
                       "availability_zone": "us-west-2a",
                       "availability_zone_id": "usw2-az2",
                       "cidr_block": "172.17.224.0/19",
                       "default_for_az": false,
                       "filter": null,
-                      "id": "subnet-083fda44af54ef47a",
+                      "id": "subnet-0fake1d",
                       "ipv6_cidr_block": null,
                       "ipv6_cidr_block_association_id": null,
                       "map_public_ip_on_launch": false,
@@ -3621,13 +3621,13 @@
                       "cidr_block": "172.17.0.0/16",
                       "cidr_block_associations": [
                         {
-                          "association_id": "vpc-cidr-assoc-0face1d",
+                          "association_id": "vpc-cidr-assoc-0fake1d",
                           "cidr_block": "172.17.0.0/16",
                           "state": "associated"
                         }
                       ],
                       "default": false,
-                      "dhcp_options_id": "dopt-fa2e9d82",
+                      "dhcp_options_id": "dopt-0fake1d",
                       "enable_dns_hostnames": true,
                       "enable_dns_support": true,
                       "filter": null,
@@ -3635,7 +3635,7 @@
                       "instance_tenancy": "default",
                       "ipv6_association_id": null,
                       "ipv6_cidr_block": null,
-                      "main_route_table_id": "rtb-0face1d",
+                      "main_route_table_id": "rtb-0fake1d",
                       "owner_id": "1234",
                       "state": "available",
                       "tags": {
@@ -4222,7 +4222,7 @@
                         "repo": "https://github.com/byu-oit/fake_app",
                         "team": "FAKE_TEAM"
                       },
-                      "unique_id": "AROAQKWMX5RQFY26MWWWF"
+                      "unique_id": "FAKE"
                     }
                   },
                   {
@@ -4524,7 +4524,7 @@
                       "account_id": "***",
                       "arn": "arn:aws:iam::***:user/GitHub-Actions",
                       "id": "2020-06-24 19:40:09.549125511 +0000 UTC",
-                      "user_id": "AIDAQKWMX5RQAORNHGM6C"
+                      "user_id": "FAKE"
                     }
                   },
                   {
@@ -4536,7 +4536,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "id": "1265143845",
+                      "id": "1234567890",
                       "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ssm:GetParemetersByPath\",\n        \"ssm:GetParameters\",\n        \"ssm:GetParameter\"\n      ],\n      \"Resource\": [\n        \"arn:aws:ssm:us-west-2:***:parameter/fake_app-dev-db/master_username\",\n        \"arn:aws:ssm:us-west-2:***:parameter/fake_app-dev-db/master_password\"\n      ]\n    }\n  ]\n}",
                       "override_json": null,
                       "policy_id": null,
@@ -4572,7 +4572,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "id": "320642683",
+                      "id": "1234567890",
                       "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ecs-tasks.amazonaws.com\"\n      }\n    }\n  ]\n}",
                       "override_json": null,
                       "policy_id": null,
@@ -4610,7 +4610,7 @@
                     "provider_name": "aws",
                     "schema_version": 0,
                     "values": {
-                      "id": "320642683",
+                      "id": "1234567890",
                       "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ecs-tasks.amazonaws.com\"\n      }\n    }\n  ]\n}",
                       "override_json": null,
                       "policy_id": null,
