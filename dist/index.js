@@ -936,40 +936,29 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const types_1 = __webpack_require__(251);
 const commentPrefix = '## Terraform Plan:';
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core.debug('got inside the action');
-            const pr = github.context.payload.pull_request;
-            if (!pr) {
-                core.info('No pull request, exiting action...');
-                return;
-            }
-            core.debug('got pull request');
-            const terraformPlan = JSON.parse(core.getInput('terraform_plan_json'));
-            const token = core.getInput('github_token');
-            const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1');
-            const commenter = new PlanCommenter(token, runId, pr);
-            yield commenter.makePlanComment(terraformPlan);
+async function run() {
+    try {
+        core.debug('got inside the action');
+        const pr = github.context.payload.pull_request;
+        if (!pr) {
+            core.info('No pull request, exiting action...');
+            return;
         }
-        catch (error) {
-            core.setFailed(error.message);
-        }
-    });
+        core.debug('got pull request');
+        const terraformPlan = JSON.parse(core.getInput('terraform_plan_json'));
+        const token = core.getInput('github_token');
+        const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1');
+        const commenter = new PlanCommenter(token, runId, pr);
+        await commenter.makePlanComment(terraformPlan);
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 }
 class PlanCommenter {
     constructor(token, runId, pr) {
@@ -977,30 +966,40 @@ class PlanCommenter {
         this.runId = runId;
         this.pr = pr;
     }
-    makePlanComment(terraformPlan) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const body = this.planComment(terraformPlan);
-            // find previous comment if it exists
-            const comments = yield this.octokit.issues.listComments(Object.assign(Object.assign({}, github.context.repo), { issue_number: this.pr.number }));
-            let previousCommentId = null;
-            for (const comment of comments.data) {
-                if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(commentPrefix)) {
-                    previousCommentId = comment.id;
-                }
-            }
-            if (previousCommentId) {
-                // update the previous comment
-                const updatedComment = yield this.octokit.issues.updateComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: this.pr.number, comment_id: previousCommentId, body }));
-                core.info(`Updated existing comment: ${updatedComment.data.html_url}`);
-                return updatedComment.data.id;
-            }
-            else {
-                // create new comment if previous comment does not exist
-                const createdComment = yield this.octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: this.pr.number, body }));
-                core.info(`Created comment: ${createdComment.data.html_url}`);
-                return createdComment.data.id;
-            }
+    async makePlanComment(terraformPlan) {
+        const body = this.planComment(terraformPlan);
+        // find previous comment if it exists
+        const comments = await this.octokit.issues.listComments({
+            ...github.context.repo,
+            issue_number: this.pr.number
         });
+        let previousCommentId = null;
+        for (const comment of comments.data) {
+            if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(commentPrefix)) {
+                previousCommentId = comment.id;
+            }
+        }
+        if (previousCommentId) {
+            // update the previous comment
+            const updatedComment = await this.octokit.issues.updateComment({
+                ...github.context.repo,
+                issue_number: this.pr.number,
+                comment_id: previousCommentId,
+                body
+            });
+            core.info(`Updated existing comment: ${updatedComment.data.html_url}`);
+            return updatedComment.data.id;
+        }
+        else {
+            // create new comment if previous comment does not exist
+            const createdComment = await this.octokit.issues.createComment({
+                ...github.context.repo,
+                issue_number: this.pr.number,
+                body
+            });
+            core.info(`Created comment: ${createdComment.data.html_url}`);
+            return createdComment.data.id;
+        }
     }
     planComment(terraformPlan) {
         const toCreate = [];
@@ -1061,11 +1060,12 @@ class PlanCommenter {
         return str;
     }
     // TODO find a way to link directly to job/step. I can't seem to figure out which job is running without hard coding in job names into each of our repos that use this action
-    linkToWorkflowJob() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const workflow = yield this.octokit.actions.getWorkflowRun(Object.assign(Object.assign({}, github.context.repo), { run_id: this.runId }));
-            return workflow.data.html_url;
+    async linkToWorkflowJob() {
+        const workflow = await this.octokit.actions.getWorkflowRun({
+            ...github.context.repo,
+            run_id: this.runId
         });
+        return workflow.data.html_url;
     }
 }
 run();
