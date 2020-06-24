@@ -949,7 +949,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const types_1 = __webpack_require__(251);
-const commentPrefix = 'Terraform Plan:';
+const commentPrefix = '## Terraform Plan:';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -961,6 +961,12 @@ function run() {
             }
             core.debug('got pull request');
             const terraformPlan = JSON.parse(core.getInput('terraform_plan_json'));
+            const token = core.getInput('github_token');
+            core.debug('got token');
+            const nwo = process.env['GITHUB_REPOSITORY'] || '/';
+            const [owner, repo] = nwo.split('/');
+            const octokit = github.getOctokit(token);
+            core.debug(`owner: ${owner}, repo: ${repo}`);
             const toCreate = [];
             const toDelete = [];
             const toReplace = [];
@@ -1020,13 +1026,15 @@ function run() {
                 }
                 body += '\n\n';
             }
-            // TODO add link to workflow in the comment
-            const token = core.getInput('github_token');
-            core.debug('got token');
-            const octokit = github.getOctokit(token);
-            const nwo = process.env['GITHUB_REPOSITORY'] || '/';
-            const [owner, repo] = nwo.split('/');
-            core.debug(`owner: ${owner}, repo: ${repo}`);
+            if (toCreate.length === 0 &&
+                toUpdate.length === 0 &&
+                toReplace.length === 0 &&
+                toDelete.length === 0) {
+                body += 'No changes';
+            }
+            else {
+                body += `[see details](https://github.com/${owner}/${repo}/runs/${process.env['GITHUB_RUN_ID']})`;
+            }
             // find previous comment if it exists
             const comments = yield octokit.issues.listComments({
                 owner,

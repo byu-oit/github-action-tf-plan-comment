@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {Action, TerraformPlan} from './types'
 
-const commentPrefix = 'Terraform Plan:'
+const commentPrefix = '## Terraform Plan:'
 
 async function run(): Promise<void> {
   try {
@@ -18,6 +18,14 @@ async function run(): Promise<void> {
     const terraformPlan: TerraformPlan = JSON.parse(
       core.getInput('terraform_plan_json')
     )
+
+    const token = core.getInput('github_token')
+    core.debug('got token')
+    const nwo = process.env['GITHUB_REPOSITORY'] || '/'
+    const [owner, repo] = nwo.split('/')
+    const octokit = github.getOctokit(token)
+    core.debug(`owner: ${owner}, repo: ${repo}`)
+
     const toCreate = []
     const toDelete = []
     const toReplace = []
@@ -77,16 +85,17 @@ async function run(): Promise<void> {
       }
       body += '\n\n'
     }
-    // TODO add link to workflow in the comment
+    if (
+      toCreate.length === 0 &&
+      toUpdate.length === 0 &&
+      toReplace.length === 0 &&
+      toDelete.length === 0
+    ) {
+      body += 'No changes'
+    } else {
+      body += `[see details](https://github.com/${owner}/${repo}/runs/${process.env['GITHUB_RUN_ID']})`
+    }
 
-    const token = core.getInput('github_token')
-    core.debug('got token')
-
-    const octokit = github.getOctokit(token)
-    const nwo = process.env['GITHUB_REPOSITORY'] || '/'
-    const [owner, repo] = nwo.split('/')
-
-    core.debug(`owner: ${owner}, repo: ${repo}`)
     // find previous comment if it exists
     const comments = await octokit.issues.listComments({
       owner,
