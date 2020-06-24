@@ -12,7 +12,7 @@ This action takes in a JSON representation of your terraform plan and creates a 
 
 ## Usage
 ```yaml
-on: push
+on: pull_request
 # ...
 jobs:
   build:
@@ -28,7 +28,6 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         terraform_plan_json: ${{ steps.json_plan.outputs.stdout }}
-    - run: mvn install
 ```
 
 This action will create a comment on your PR like:

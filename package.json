@@ -23,7 +23,7 @@
     "setup"
   ],
   "author": "YourNameOrOrganization",
-  "license": "Apache",
+  "license": "Apache-2.0",
   "dependencies": {
     "@actions/core": "^1.2.0",
     "@actions/github": "^3.0.0"

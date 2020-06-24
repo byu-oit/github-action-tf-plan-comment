@@ -123,7 +123,7 @@ async function run(): Promise<void> {
     } else {
       // create new comment if previous comment does not exist
       core.debug('Creating new comment')
-      octokit.issues.createComment({
+      await octokit.issues.createComment({
         owner,
         repo,
         issue_number: pr.number,

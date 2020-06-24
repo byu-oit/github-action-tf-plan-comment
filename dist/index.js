@@ -1061,7 +1061,7 @@ function run() {
             else {
                 // create new comment if previous comment does not exist
                 core.debug('Creating new comment');
-                octokit.issues.createComment({
+                yield octokit.issues.createComment({
                     owner,
                     repo,
                     issue_number: pr.number,
