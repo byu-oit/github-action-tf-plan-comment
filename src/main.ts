@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
+import * as exec from '@actions/exec'
 import * as github from '@actions/github'
-import fs from 'fs'
 import {GitHub} from '@actions/github/lib/utils'
 import {Action, PullRequest, TerraformPlan} from './types'
 
@@ -17,8 +17,18 @@ async function run(): Promise<void> {
     }
     core.debug('got pull request')
 
-    const jsonFileName = core.getInput('terraform_plan_json_file')
-    const json = fs.readFileSync(jsonFileName, 'utf8')
+    const planFileName = core.getInput('terraform_plan_file')
+
+    let json = ''
+    const options = {
+      listeners: {
+        stdout: (data: Buffer) => {
+          json += data.toString('utf8')
+        }
+      }
+    }
+    await exec.exec('terraform', ['show', '-json', planFileName], options)
+
     const terraformPlan: TerraformPlan = JSON.parse(json)
     core.debug('parsed json')
     const token = core.getInput('github_token')

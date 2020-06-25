@@ -17,9 +17,18 @@ jobs:
   test: # make sure the action works on a clean machine without building only on PRs
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    env:
+      tf_version: 0.12.27
     steps:
     - uses: actions/checkout@v1
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.tf_version }}
+    - run: terraform init
+      working-directory: __tests__
+    - run: terraform plan -out test-plan.tfplan
+      working-directory: __tests__
     - uses: ./
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_json_file: __tests__/test-plan.json
+        terraform_plan_json_file: __tests__/test-plan.tfplan
