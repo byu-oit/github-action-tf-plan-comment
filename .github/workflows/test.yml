@@ -31,4 +31,4 @@ jobs:
     - uses: ./
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_json_file: __tests__/test-plan.tfplan
+        terraform_plan_file: __tests__/test-plan.tfplan
