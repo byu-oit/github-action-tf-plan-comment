@@ -1755,37 +1755,46 @@ async function run() {
         }
         core.debug('got pull request');
         const planFileName = core.getInput('terraform_plan_file');
-        let json = '';
-        const options = {
-            listeners: {
-                stdout: (data) => {
-                    json += data.toString('utf8');
-                }
-            }
-        };
-        await exec.exec('terraform', ['show', '-json', planFileName], options);
-        core.debug('** json **');
-        core.debug(json);
-        core.debug('** end json **');
-        // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
-        const match = json.match(/{.*}/);
-        if (match === null) {
-            core.error('null match...');
-            return;
-        }
-        core.debug('** match json **');
-        core.debug(match[0]);
-        core.debug('** end match json **');
-        const terraformPlan = JSON.parse(match[0]);
-        core.debug('parsed json');
+        const json = await jsonFromPlan(planFileName);
+        const terraformPlan = JSON.parse(json);
+        core.debug('successfully parsed json');
         const token = core.getInput('github_token');
         const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1');
+        if (runId === -1) {
+            core.setFailed('No GITHUB_RUN_ID found');
+            return;
+        }
         const commenter = new PlanCommenter(token, runId, pr);
-        await commenter.makePlanComment(terraformPlan);
+        await commenter.commentWithPlanSummary(terraformPlan);
     }
     catch (error) {
         core.setFailed(error.message);
     }
+}
+// we need to parse the terraform plan into a json string
+async function jsonFromPlan(planFileName) {
+    let output = '';
+    const options = {
+        listeners: {
+            stdout: (data) => {
+                output += data.toString('utf8');
+            }
+        }
+    };
+    await exec.exec('terraform', ['show', '-json', planFileName], options);
+    // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
+    const json = output.match(/{.*}/);
+    if (json === null) {
+        core.error('null match...');
+        core.debug('** start of  output **');
+        core.debug(output);
+        core.debug('** end of output **');
+        throw Error("output didn't match with /{.*}/ correctly");
+    }
+    core.debug('** matched json **');
+    core.debug(json[0]);
+    core.debug('** end matched json **');
+    return json[0];
 }
 class PlanCommenter {
     constructor(token, runId, pr) {
@@ -1793,8 +1802,8 @@ class PlanCommenter {
         this.runId = runId;
         this.pr = pr;
     }
-    async makePlanComment(terraformPlan) {
-        const body = await this.planComment(terraformPlan);
+    async commentWithPlanSummary(terraformPlan) {
+        const body = await this.planSummaryBody(terraformPlan);
         // find previous comment if it exists
         const comments = await this.octokit.issues.listComments({
             ...github.context.repo,
@@ -1828,7 +1837,7 @@ class PlanCommenter {
             return createdComment.data.id;
         }
     }
-    async planComment(terraformPlan) {
+    async planSummaryBody(terraformPlan) {
         const toCreate = [];
         const toDelete = [];
         const toReplace = [];
