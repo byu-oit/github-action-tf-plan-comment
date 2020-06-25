@@ -1764,6 +1764,14 @@ async function run() {
             }
         };
         await exec.exec('terraform', ['show', '-json', planFileName], options);
+        core.debug('** json **');
+        core.debug(json);
+        core.debug('** end json **');
+        const index = json.indexOf('{');
+        json = json.substr(index);
+        core.debug('** substr json **');
+        core.debug(json);
+        core.debug('** end substr json **');
         const terraformPlan = JSON.parse(json);
         core.debug('parsed json');
         const token = core.getInput('github_token');
