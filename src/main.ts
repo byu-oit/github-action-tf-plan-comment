@@ -32,13 +32,16 @@ async function run(): Promise<void> {
     core.debug(json)
     core.debug('** end json **')
 
-    const index = json.indexOf('{')
-    json = json.substr(index)
-    core.debug('** substr json **')
-    core.debug(json)
-    core.debug('** end substr json **')
+    const match = json.match(/{.*}/)
+    if (match === null) {
+      core.error('null match...')
+      return
+    }
+    core.debug('** match json **')
+    core.debug(match[0])
+    core.debug('** end match json **')
 
-    const terraformPlan: TerraformPlan = JSON.parse(json)
+    const terraformPlan: TerraformPlan = JSON.parse(match[0])
     core.debug('parsed json')
     const token = core.getInput('github_token')
     const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1')
