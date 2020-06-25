@@ -32,6 +32,7 @@ async function run(): Promise<void> {
     core.debug(json)
     core.debug('** end json **')
 
+    // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
     const match = json.match(/{.*}/)
     if (match === null) {
       core.error('null match...')
@@ -150,9 +151,9 @@ class PlanCommenter {
   private static resourcesToChangeSection(changeType: string, list: string[]): string {
     let str = ''
     if (list.length > 0) {
-      str += `will ${changeType} ${list.length} resource${list.length > 1 ? 's' : ''}: \n`
+      str += `will ${changeType} ${list.length} resource${list.length > 1 ? 's' : ''}:`
       for (const resource of list) {
-        str += `- ${resource}`
+        str += ` \n  * ${resource}`
       }
       str += '\n\n'
     }
