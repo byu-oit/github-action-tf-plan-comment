@@ -29,6 +29,7 @@ jobs:
     - run: terraform plan -out test-plan.tfplan
       working-directory: __tests__
     - uses: ./
+      working-directory: __tests__
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         terraform_plan_file: __tests__/test-plan.tfplan
