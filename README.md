@@ -25,14 +25,14 @@ jobs:
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        terraform-directory: terraform-iac/dev/app # where your terraform files are
-        terraform-plan-file: plan.tfplan
+        working-directory: terraform-iac/dev/app # where your terraform files are
+        terraform-plan-file: plan.tfplan # relative to working directory
 ```
 
 ## Inputs
 * `github-token` - (**required**) pass in the GitHub token to make comments on the PR
-* `terraform-directory` - (_optional_) the directory of the terraform configuration files (defaults to `.`)
-* `terraform-plan-file` - (**required**) Filename of the terraform plan (don't include the full path, just the path from the `terraform-directory`)
+* `working-directory` - (_optional_) the directory of the terraform configuration files (defaults to `.`)
+* `terraform-plan-file` - (**required**) Filename of the terraform plan (relative to `working-directory`)
 
 ## Output
 This action will create a comment on your PR like:

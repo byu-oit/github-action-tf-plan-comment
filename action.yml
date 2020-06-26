@@ -8,7 +8,7 @@ inputs:
   terraform-plan-file:
     required: true
     description: File name of the terraform plan
-  terraform-directory:
+  working-directory:
     required: false
     description: Directory of the terraform configuration
     default: .
