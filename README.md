@@ -1,14 +1,13 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+![build](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/build/badge.svg)
+![test](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/test/badge.svg)
 
 # ![BYU logo](https://www.hscripts.com/freeimages/logos/university-logos/byu/byu-logo-clipart-128.gif) github-action-tf-plan-comment
 
 GitHub Action to make a comment on a pull request with the proposed updated terraform plan
 
-This action takes in a JSON representation of your terraform plan and creates a comment on the Pull Request (PR) with basic info about what the plan will create, update, replace, or delete.
+This action takes in the terraform plan and creates a comment on the Pull Request (PR) with basic info about what the plan will create, update, replace, or delete.
 
-**Note:** this action does not run terraform plan for you, you must pass in the plan as an input.
+**Note:** this action does not run `terraform plan` for you, you must pass in the plan as an input as well as the directory of the terraform configuration (where the plan and .terraform dir are located after `terraform init`).
 
 ## Usage
 ```yaml
@@ -19,33 +18,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # ... 
-    - name: Terraform Plan JSON
-      id: json_plan
-      run: terraform show -json plan
+    # terraform init
+    # terraform plan
     - name: Comment Terraform Plan
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_json: ${{ steps.json_plan.outputs.stdout }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: terraform-iac/dev/app # where your terraform files are
+        terraform-plan-file: plan.tfplan # relative to working directory
 ```
 
-**Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you 
+## Inputs
+* `github-token` - (**required**) pass in the GitHub token to make comments on the PR
+* `working-directory` - (_optional_) the directory of the terraform configuration files (defaults to `.`)
+* `terraform-plan-file` - (**required**) Filename of the terraform plan (relative to `working-directory`)
 
+## Output
 This action will create a comment on your PR like:
 
 > ## Terraform Plan:
-> will replace (delete then create) 1 resources:
+> will **replace (delete then create)** 1 resources:
 > - aws_security_group_rule - db_access
 > 
-> will delete 1 resources:
+> will **delete** 1 resources:
 > - aws_db_instance - database
 > 
 >[see details](link to the github action workflow)
-
-
-## Inputs
-* `github_token` - (**required**) pass in the GitHub token to make comments on the PR
-* `terraform_plan_json` - (**required**) JSON representation of the terraform plan to be executed
 
 ## Contributing
 Hopefully this is useful to others at BYU.

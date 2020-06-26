@@ -1,45 +1,86 @@
-name: "build-test"
-on: # rebuild any PRs and main branch changes
+name: "test"
+on:
   pull_request:
-  push:
     branches:
       - master
-      - 'releases/*'
+      - 'v*'
 
 jobs:
-  build: # make sure build/ci work properly
+  test-action: # make sure the action works on a clean machine without building
+    name: Test normal PR use
     runs-on: ubuntu-latest
+    env:
+      tf_version: 0.12.27
     steps:
     - uses: actions/checkout@v1
-    - run: |
-        yarn install
-        yarn run all
-  test: # make sure the action works on a clean machine without building only on PRs
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.tf_version }}
+    - run: terraform init
+      working-directory: __tests__
+    - run: terraform plan -out test-plan.tfplan
+      working-directory: __tests__
     - uses: ./
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_json: |
-          {
-            "resource_changes": [
-              {
-                "address": "module.app.module.database.aws_db_instance.database",
-                "type": "aws_db_instance",
-                "name": "database",
-                "change": {
-                  "actions": ["delete"]
-                }
-              },
-              {
-                "address": "module.app.aws_security_group_rule.db_access",
-                "type": "aws_security_group_rule",
-                "name": "db_access",
-                "change": {
-                  "actions": ["delete", "create"]
-                }
-              }
-            ]
-          }
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: __tests__
+        terraform-plan-file: test-plan.tfplan
+
+  test-action-plan-in-diff-dir: # make sure the action works with plan in different directory from working dir
+    name: Test TF plan in different dir
+    runs-on: ubuntu-latest
+    env:
+      tf_version: 0.12.27
+    steps:
+      - uses: actions/checkout@v1
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.tf_version }}
+      - run: terraform init
+        working-directory: __tests__
+      - run: terraform plan -out ../test-plan.tfplan
+        working-directory: __tests__
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: __tests__
+          terraform-plan-file: ../test-plan.tfplan
+
+  test-action-without-tf-wrapper: # make sure the action works without the terraform wrapper
+    name: Test without TF wrapper
+    runs-on: ubuntu-latest
+    env:
+      tf_version: 0.12.27
+    steps:
+      - uses: actions/checkout@v1
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.tf_version }}
+          terraform_wrapper: false
+      - run: terraform init
+        working-directory: __tests__
+      - run: terraform plan -out test-plan.tfplan
+        working-directory: __tests__
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: __tests__
+          terraform-plan-file: test-plan.tfplan
+
+  test-action-at-root: # make sure the action works with terraform dir as root dir
+    name: Test from Root
+    runs-on: ubuntu-latest
+    env:
+      tf_version: 0.12.27
+    steps:
+      - uses: actions/checkout@v1
+      - run: mv __tests__/* .
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.tf_version }}
+      - run: terraform init
+      - run: terraform plan -out test-plan.tfplan
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          terraform-plan-file: test-plan.tfplan

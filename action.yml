@@ -2,12 +2,16 @@ name: 'Terraform Plan Comment'
 description: 'Creates a comment on a pull request with the terraform plan'
 author: 'Brigham Young University'
 inputs:
-  github_token:
+  github-token:
     required: true
     description: 'github token'
-  terraform_plan_json:
+  terraform-plan-file:
     required: true
-    description: JSON of the terraform plan
+    description: File name of the terraform plan
+  working-directory:
+    required: false
+    description: Directory of the terraform configuration
+    default: .
 runs:
   using: 'node12'
   main: 'dist/index.js'

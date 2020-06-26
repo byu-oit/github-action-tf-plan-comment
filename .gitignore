@@ -100,3 +100,7 @@ lib/**/*
 
 .idea
 *.iml
+
+!__tests__/main.test.ts
+!__tests__/test.tf
+__tests__/
