@@ -3,6 +3,7 @@ import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import {GitHub} from '@actions/github/lib/utils'
 import {Action, PullRequest, TerraformPlan} from './types'
+import {ExecOptions} from '@actions/exec'
 
 const commentPrefix = '## Terraform Plan:'
 
@@ -42,7 +43,7 @@ async function run(): Promise<void> {
 async function jsonFromPlan(dir: string, planFileName: string): Promise<string> {
   // run terraform show -json to parse the plan into a json string
   let output = ''
-  const options = {
+  const options: ExecOptions = {
     listeners: {
       stdout: (data: Buffer) => {
         // captures the standard output of the terraform show command and appends it to the variable 'output'
@@ -52,6 +53,7 @@ async function jsonFromPlan(dir: string, planFileName: string): Promise<string> 
     cwd: dir // execute the command from working directory 'dir'
   }
 
+  core.debug(`execOptions: ${JSON.stringify(options)}`)
   await exec.exec('terraform', ['show', '-json', planFileName], options)
 
   // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action

@@ -1785,6 +1785,7 @@ async function jsonFromPlan(dir, planFileName) {
         },
         cwd: dir // execute the command from working directory 'dir'
     };
+    core.debug(`execOptions: ${JSON.stringify(options)}`);
     await exec.exec('terraform', ['show', '-json', planFileName], options);
     // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
     const json = output.match(/{.*}/);
