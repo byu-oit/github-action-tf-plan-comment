@@ -1755,8 +1755,8 @@ async function run() {
         }
         core.debug('got pull request');
         const planFileName = core.getInput('terraform-plan-file');
-        const terraformDir = core.getInput('working-directory');
-        const json = await jsonFromPlan(terraformDir, planFileName);
+        const workingDir = core.getInput('working-directory');
+        const json = await jsonFromPlan(workingDir, planFileName);
         const terraformPlan = JSON.parse(json);
         core.debug('successfully parsed json');
         const token = core.getInput('github-token');
@@ -1773,7 +1773,7 @@ async function run() {
     }
 }
 // we need to parse the terraform plan into a json string
-async function jsonFromPlan(dir, planFileName) {
+async function jsonFromPlan(workingDir, planFileName) {
     // run terraform show -json to parse the plan into a json string
     let output = '';
     const options = {
@@ -1783,7 +1783,7 @@ async function jsonFromPlan(dir, planFileName) {
                 output += data.toString('utf8');
             }
         },
-        cwd: dir // execute the command from working directory 'dir'
+        cwd: workingDir // execute the command from working directory 'dir'
     };
     core.debug(`execOptions: ${JSON.stringify(options)}`);
     await exec.exec('terraform', ['show', '-json', planFileName], options);
@@ -1850,7 +1850,7 @@ class PlanCommenter {
         for (const resourceChange of terraformPlan.resource_changes) {
             const actions = resourceChange.change.actions;
             const resourceName = `${resourceChange.type} - ${resourceChange.name}`;
-            core.debug(`resource: ${resourceName}, actions: ${actions}`);
+            core.debug(`  resource: ${resourceName}, actions: ${actions}`);
             if (actions.length === 1 && actions.includes(types_1.Action.create)) {
                 toCreate.push(resourceName);
             }

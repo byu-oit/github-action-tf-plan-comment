@@ -26,6 +26,26 @@ jobs:
         working-directory: __tests__
         terraform-plan-file: test-plan.tfplan
 
+  test-action-plan-in-diff-dir: # make sure the action works with plan in different directory from working dir
+    name: Test TF plan in different dir
+    runs-on: ubuntu-latest
+    env:
+      tf_version: 0.12.27
+    steps:
+      - uses: actions/checkout@v1
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.tf_version }}
+      - run: terraform init
+        working-directory: __tests__
+      - run: terraform plan -out ../test-plan.tfplan
+        working-directory: __tests__
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: __tests__
+          terraform-plan-file: ../test-plan.tfplan
+
   test-action-without-tf-wrapper: # make sure the action works without the terraform wrapper
     name: Test without TF wrapper
     runs-on: ubuntu-latest

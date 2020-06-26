@@ -1,6 +1,5 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+![build](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/build/badge.svg)
+![test](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/test/badge.svg)
 
 # ![BYU logo](https://www.hscripts.com/freeimages/logos/university-logos/byu/byu-logo-clipart-128.gif) github-action-tf-plan-comment
 
@@ -8,7 +7,7 @@ GitHub Action to make a comment on a pull request with the proposed updated terr
 
 This action takes in the terraform plan and creates a comment on the Pull Request (PR) with basic info about what the plan will create, update, replace, or delete.
 
-**Note:** this action does not run terraform plan for you, you must pass in the plan as an input as well as the directory of the terraform configuration (where the plan and .terraform dir are located after `terraform init`).
+**Note:** this action does not run `terraform plan` for you, you must pass in the plan as an input as well as the directory of the terraform configuration (where the plan and .terraform dir are located after `terraform init`).
 
 ## Usage
 ```yaml
