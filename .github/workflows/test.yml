@@ -14,7 +14,9 @@ jobs:
     - run: |
         yarn install
         yarn run all
-  test: # make sure the action works on a clean machine without building only on PRs
+
+  test-action: # make sure the action works on a clean machine without building (only on PRs)
+    name: Test normal PR use
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     env:
@@ -33,3 +35,44 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         terraform-directory: __tests__
         terraform-plan-file: test-plan.tfplan
+
+    test-action-without-tf-wrapper: # make sure the action works without the terraform wrapper (only on PRs)
+      name: Test without TF wrapper
+      if: ${{ github.event_name == 'pull_request' }}
+      runs-on: ubuntu-latest
+      env:
+        tf_version: 0.12.27
+      steps:
+        - uses: actions/checkout@v1
+        - uses: hashicorp/setup-terraform@v1
+          with:
+            terraform_version: ${{ env.tf_version }}
+            terraform_wrapper: false
+        - run: terraform init
+          working-directory: __tests__
+        - run: terraform plan -out test-plan.tfplan
+          working-directory: __tests__
+        - uses: ./
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            terraform-directory: __tests__
+            terraform-plan-file: test-plan.tfplan
+
+    test-action-at-root: # make sure the action works with terraform dir as root dir (only on PRs)
+      name: Test from Root
+      if: ${{ github.event_name == 'pull_request' }}
+      runs-on: ubuntu-latest
+      env:
+        tf_version: 0.12.27
+      steps:
+        - uses: actions/checkout@v1
+        - run: mv __tests__/* .
+        - uses: hashicorp/setup-terraform@v1
+          with:
+            terraform_version: ${{ env.tf_version }}
+        - run: terraform init
+        - run: terraform plan -out test-plan.tfplan
+        - uses: ./
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            terraform-plan-file: test-plan.tfplan

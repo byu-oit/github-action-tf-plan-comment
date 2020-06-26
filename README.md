@@ -6,9 +6,9 @@
 
 GitHub Action to make a comment on a pull request with the proposed updated terraform plan
 
-This action takes in a JSON representation of your terraform plan and creates a comment on the Pull Request (PR) with basic info about what the plan will create, update, replace, or delete.
+This action takes in the terraform plan and creates a comment on the Pull Request (PR) with basic info about what the plan will create, update, replace, or delete.
 
-**Note:** this action does not run terraform plan for you, you must pass in the plan as an input.
+**Note:** this action does not run terraform plan for you, you must pass in the plan as an input as well as the directory of the terraform configuration (where the plan and .terraform dir are located after `terraform init`).
 
 ## Usage
 ```yaml
@@ -19,25 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # ... 
-    - name: Terraform Setup
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: ${{ env.tf_version }}
-        terraform_wrapper: false
     # terraform init
     # terraform plan
     - name: Comment Terraform Plan
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        terraform-directory: terraform-iac/dev/app
+        terraform-directory: terraform-iac/dev/app # where your terraform files are
         terraform-plan-file: plan.tfplan
 ```
 
-**Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you.
-Also the setup-terraform action by default puts a wrapper around the stdout of commands, so trying to use `terraform show -json > plan.json` will save more than just the json output to the json file.
-We disable the wrapper in this example so that you can pipe the output to a file.  
+## Inputs
+* `github-token` - (**required**) pass in the GitHub token to make comments on the PR
+* `terraform-directory` - (_optional_) the directory of the terraform configuration files (defaults to `.`)
+* `terraform-plan-file` - (**required**) Filename of the terraform plan (don't include the full path, just the path from the `terraform-directory`)
 
+## Output
 This action will create a comment on your PR like:
 
 > ## Terraform Plan:
@@ -48,12 +45,6 @@ This action will create a comment on your PR like:
 > - aws_db_instance - database
 > 
 >[see details](link to the github action workflow)
-
-
-## Inputs
-* `github-token` - (**required**) pass in the GitHub token to make comments on the PR
-* `terraform-directory` - (optional) the directory of the terraform configuration files (defaults to `.`)
-* `terraform-plan-file` - (**required**) Filename of the terraform plan (don't include the full path, just the path from the `terraform-directory`)
 
 ## Contributing
 Hopefully this is useful to others at BYU.
