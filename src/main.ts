@@ -57,7 +57,7 @@ async function jsonFromPlan(dir: string, planFileName: string): Promise<string> 
       }
     }
   }
-  await exec.exec('terraform', ['show', '-json', planFileName], options)
+  await exec.exec('terraform', ['show', '-json', `${dir}/${planFileName}`], options)
 
   // delete .terraform dir after terraform show command to clean up after
   const rmDotTerraform = io.rmRF('.terraform')

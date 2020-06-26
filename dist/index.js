@@ -1790,7 +1790,7 @@ async function jsonFromPlan(dir, planFileName) {
             }
         }
     };
-    await exec.exec('terraform', ['show', '-json', planFileName], options);
+    await exec.exec('terraform', ['show', '-json', `${dir}/${planFileName}`], options);
     // delete .terraform dir after terraform show command to clean up after
     const rmDotTerraform = io.rmRF('.terraform');
     // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
