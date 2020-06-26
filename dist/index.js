@@ -1743,6 +1743,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
 const github = __importStar(__webpack_require__(469));
+const io = __importStar(__webpack_require__(1));
 const types_1 = __webpack_require__(251);
 const commentPrefix = '## Terraform Plan:';
 async function run() {
@@ -1774,8 +1775,11 @@ async function run() {
 }
 // we need to parse the terraform plan into a json string
 async function jsonFromPlan(dir, planFileName) {
-    // we need to cd into the terraform directory before running terraform show
-    await exec.exec('cd', [dir]);
+    core.debug(`dir after replace: "${dir}"`);
+    dir = dir.replace(/\/\s*$/, ''); // remove last / character if it exists
+    core.debug(`dir after replace: "${dir}"`);
+    // we need to copy the .terraform dir into the working directory in order for terraform show to work
+    await io.cp(`${dir}/.terraform`, '.', { recursive: true });
     // run terraform show -json to parse the plan into a json string
     let output = '';
     const options = {
@@ -1787,6 +1791,8 @@ async function jsonFromPlan(dir, planFileName) {
         }
     };
     await exec.exec('terraform', ['show', '-json', planFileName], options);
+    // delete .terraform dir after terraform show command to clean up after
+    const rmDotTerraform = io.rmRF('.terraform');
     // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
     const json = output.match(/{.*}/);
     if (json === null) {
@@ -1799,6 +1805,7 @@ async function jsonFromPlan(dir, planFileName) {
     core.debug('** matched json **');
     core.debug(json[0]);
     core.debug('** end matched json **');
+    await rmDotTerraform; // finish the removing of the .terraform dir
     return json[0];
 }
 class PlanCommenter {

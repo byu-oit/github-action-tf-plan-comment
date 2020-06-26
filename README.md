@@ -29,8 +29,9 @@ jobs:
     - name: Comment Terraform Plan
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_file: plan.tfplan
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        terraform-directory: terraform-iac/dev/app
+        terraform-plan-file: plan.tfplan
 ```
 
 **Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you.
@@ -50,8 +51,9 @@ This action will create a comment on your PR like:
 
 
 ## Inputs
-* `github_token` - (**required**) pass in the GitHub token to make comments on the PR
-* `terraform_plan_file` - (**required**) Filename of the terraform plan
+* `github-token` - (**required**) pass in the GitHub token to make comments on the PR
+* `terraform-directory` - (optional) the directory of the terraform configuration files (defaults to `.`)
+* `terraform-plan-file` - (**required**) Filename of the terraform plan (don't include the full path, just the path from the `terraform-directory`)
 
 ## Contributing
 Hopefully this is useful to others at BYU.
