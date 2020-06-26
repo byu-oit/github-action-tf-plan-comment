@@ -1755,7 +1755,7 @@ async function run() {
         }
         core.debug('got pull request');
         const planFileName = core.getInput('terraform-plan-file');
-        const terraformDir = core.getInput('terraform-directory');
+        const terraformDir = core.getInput('working-directory');
         const json = await jsonFromPlan(terraformDir, planFileName);
         const terraformPlan = JSON.parse(json);
         core.debug('successfully parsed json');

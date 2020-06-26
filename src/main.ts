@@ -19,7 +19,7 @@ async function run(): Promise<void> {
     core.debug('got pull request')
 
     const planFileName = core.getInput('terraform-plan-file')
-    const terraformDir = core.getInput('terraform-directory')
+    const terraformDir = core.getInput('working-directory')
 
     const json = await jsonFromPlan(terraformDir, planFileName)
     const terraformPlan: TerraformPlan = JSON.parse(json)
