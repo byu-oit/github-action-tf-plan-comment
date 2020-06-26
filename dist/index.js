@@ -1778,12 +1778,12 @@ async function jsonFromPlan(dir, planFileName) {
     let output = '';
     const options = {
         listeners: {
-            // captures the standard output of the terraform show command and appends it to the variable 'output'
             stdout: (data) => {
+                // captures the standard output of the terraform show command and appends it to the variable 'output'
                 output += data.toString('utf8');
-            },
-            cwd: dir // execute the command from working directory 'dir'
-        }
+            }
+        },
+        cwd: dir // execute the command from working directory 'dir'
     };
     await exec.exec('terraform', ['show', '-json', planFileName], options);
     // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
