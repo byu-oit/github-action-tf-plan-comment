@@ -28,8 +28,8 @@ jobs:
       working-directory: __tests__
     - run: terraform plan -out test-plan.tfplan
       working-directory: __tests__
-    - run: cp -r __tests__/.terraform .
     - uses: ./
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_file: __tests__/test-plan.tfplan
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        terraform-directory: __tests__
+        terraform-plan-file: test-plan.tfplan

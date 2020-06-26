@@ -17,13 +17,14 @@ async function run(): Promise<void> {
     }
     core.debug('got pull request')
 
-    const planFileName = core.getInput('terraform_plan_file')
+    const planFileName = core.getInput('terraform-plan-file')
+    const terraformDir = core.getInput('terraform-directory')
 
-    const json = await jsonFromPlan(planFileName)
+    const json = await jsonFromPlan(terraformDir, planFileName)
     const terraformPlan: TerraformPlan = JSON.parse(json)
     core.debug('successfully parsed json')
 
-    const token = core.getInput('github_token')
+    const token = core.getInput('github-token')
     const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1')
     if (runId === -1) {
       core.setFailed('No GITHUB_RUN_ID found')
@@ -38,10 +39,15 @@ async function run(): Promise<void> {
 }
 
 // we need to parse the terraform plan into a json string
-async function jsonFromPlan(planFileName: string): Promise<string> {
+async function jsonFromPlan(dir: string, planFileName: string): Promise<string> {
+  // we need to cd into the terraform directory before running terraform show
+  await exec.exec('cd', [dir])
+
+  // run terraform show -json to parse the plan into a json string
   let output = ''
   const options = {
     listeners: {
+      // captures the standard output of the terraform show command and appends it to the variable 'output'
       stdout: (data: Buffer) => {
         output += data.toString('utf8')
       }

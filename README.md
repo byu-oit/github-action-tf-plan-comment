@@ -26,14 +26,11 @@ jobs:
         terraform_wrapper: false
     # terraform init
     # terraform plan
-    - name: Terraform Plan JSON
-      id: json_plan
-      run: terraform show -json plan > plan.json
     - name: Comment Terraform Plan
       uses: byu-oit/github-action-tf-plan-comment@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        terraform_plan_json_file: plan.json
+        terraform_plan_file: plan.tfplan
 ```
 
 **Note:** make sure you run your `terraform show-json plan` in the same working directory as the `terraform plan` step, and make sure you.
@@ -43,10 +40,10 @@ We disable the wrapper in this example so that you can pipe the output to a file
 This action will create a comment on your PR like:
 
 > ## Terraform Plan:
-> will replace (delete then create) 1 resources:
+> will **replace (delete then create)** 1 resources:
 > - aws_security_group_rule - db_access
 > 
-> will delete 1 resources:
+> will **delete** 1 resources:
 > - aws_db_instance - database
 > 
 >[see details](link to the github action workflow)
@@ -54,7 +51,7 @@ This action will create a comment on your PR like:
 
 ## Inputs
 * `github_token` - (**required**) pass in the GitHub token to make comments on the PR
-* `terraform_plan_json` - (**required**) JSON representation of the terraform plan to be executed
+* `terraform_plan_file` - (**required**) Filename of the terraform plan
 
 ## Contributing
 Hopefully this is useful to others at BYU.
