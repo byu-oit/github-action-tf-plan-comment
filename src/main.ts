@@ -1,7 +1,9 @@
 import * as core from '@actions/core'
+import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import {GitHub} from '@actions/github/lib/utils'
 import {Action, PullRequest, TerraformPlan} from './types'
+import {ExecOptions} from '@actions/exec'
 
 const commentPrefix = '## Terraform Plan:'
 
@@ -16,15 +18,58 @@ async function run(): Promise<void> {
     }
     core.debug('got pull request')
 
-    const terraformPlan: TerraformPlan = JSON.parse(core.getInput('terraform_plan_json'))
-    const token = core.getInput('github_token')
+    const planFileName = core.getInput('terraform-plan-file')
+    const workingDir = core.getInput('working-directory')
+
+    const json = await jsonFromPlan(workingDir, planFileName)
+    const terraformPlan: TerraformPlan = JSON.parse(json)
+    core.debug('successfully parsed json')
+
+    const token = core.getInput('github-token')
     const runId = parseInt(process.env['GITHUB_RUN_ID'] || '-1')
+    if (runId === -1) {
+      core.setFailed('No GITHUB_RUN_ID found')
+      return
+    }
 
     const commenter = new PlanCommenter(token, runId, pr)
-    await commenter.makePlanComment(terraformPlan)
+    await commenter.commentWithPlanSummary(terraformPlan)
   } catch (error) {
     core.setFailed(error.message)
   }
+}
+
+// we need to parse the terraform plan into a json string
+async function jsonFromPlan(workingDir: string, planFileName: string): Promise<string> {
+  // run terraform show -json to parse the plan into a json string
+  let output = ''
+  const options: ExecOptions = {
+    listeners: {
+      stdout: (data: Buffer) => {
+        // captures the standard output of the terraform show command and appends it to the variable 'output'
+        output += data.toString('utf8')
+      }
+    },
+    cwd: workingDir // execute the command from working directory 'dir'
+  }
+
+  core.debug(`execOptions: ${JSON.stringify(options)}`)
+  await exec.exec('terraform', ['show', '-json', planFileName], options)
+
+  // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
+  const json = output.match(/{.*}/)
+  if (json === null) {
+    core.error('null match...')
+    core.debug('** start of  output **')
+    core.debug(output)
+    core.debug('** end of output **')
+    throw Error("output didn't match with /{.*}/ correctly")
+  }
+  core.debug('** matched json **')
+  core.debug(json[0])
+  core.debug('** end matched json **')
+
+  return json[0]
 }
 
 class PlanCommenter {
@@ -38,8 +83,8 @@ class PlanCommenter {
     this.pr = pr
   }
 
-  async makePlanComment(terraformPlan: TerraformPlan): Promise<number> {
-    const body = await this.planComment(terraformPlan)
+  async commentWithPlanSummary(terraformPlan: TerraformPlan): Promise<number> {
+    const body = await this.planSummaryBody(terraformPlan)
     // find previous comment if it exists
     const comments = await this.octokit.issues.listComments({
       ...github.context.repo,
@@ -72,15 +117,16 @@ class PlanCommenter {
       return createdComment.data.id
     }
   }
-  async planComment(terraformPlan: TerraformPlan): Promise<string> {
+
+  async planSummaryBody(terraformPlan: TerraformPlan): Promise<string> {
     const toCreate = []
     const toDelete = []
     const toReplace = []
     const toUpdate = []
     for (const resourceChange of terraformPlan.resource_changes) {
-      core.debug(`resource: ${JSON.stringify(resourceChange)}`)
       const actions = resourceChange.change.actions
       const resourceName = `${resourceChange.type} - ${resourceChange.name}`
+      core.debug(`  resource: ${resourceName}, actions: ${actions}`)
       if (actions.length === 1 && actions.includes(Action.create)) {
         toCreate.push(resourceName)
       } else if (actions.length === 1 && actions.includes(Action.delete)) {
@@ -93,7 +139,7 @@ class PlanCommenter {
         toReplace.push(resourceName)
       } else if (actions.length === 1 && actions.includes(Action.update)) {
         toUpdate.push(resourceName)
-      } else {
+      } else if (!actions.includes(Action['no-op'])) {
         core.debug(`Not found? ${actions}`)
       }
     }
@@ -124,9 +170,9 @@ class PlanCommenter {
   private static resourcesToChangeSection(changeType: string, list: string[]): string {
     let str = ''
     if (list.length > 0) {
-      str += `will ${changeType} ${list.length} resource${list.length > 1 ? 's' : ''}: \n`
+      str += `will ${changeType} ${list.length} resource${list.length > 1 ? 's' : ''}:`
       for (const resource of list) {
-        str += `- ${resource}`
+        str += ` \n  * ${resource}`
       }
       str += '\n\n'
     }
