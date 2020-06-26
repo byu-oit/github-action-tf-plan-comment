@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - master
-      - 'releases/*'
+      - 'v*'
 
 jobs:
   test-action: # make sure the action works on a clean machine without building

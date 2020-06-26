@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - 'releases/*'
+      - 'v*'
 
 jobs:
   build: # make sure build/ci work properly
