@@ -5,6 +5,8 @@ on:
     branches:
       - master
       - 'v*'
+env:
+  node_version: "12.x"
 
 jobs:
   build: # make sure build/ci work properly
@@ -14,3 +16,17 @@ jobs:
       - run: |
           yarn install
           yarn run all
+
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node_version }}
+
+      - name: npm audit
+        run: npm audit --audit-level=critical
