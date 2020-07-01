@@ -10,12 +10,23 @@ env:
 
 jobs:
   build: # make sure build/ci work properly
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - run: |
-          yarn install
-          yarn run all
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node_version }}
+
+      - name: yarn install
+        run: yarn install
+
+      - name: yarn build
+        run: yarn build
+
+      - name: yarn run pack
+        run: yarn run pack
 
   audit:
     name: Audit
@@ -30,3 +41,37 @@ jobs:
 
       - name: yarn audit
         run: yarn audit --level critical [[ $? -ge 16 ]] && exit 1 || exit 0
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node_version }}
+
+      - name: yarn install
+        run: yarn install
+
+      - name: yarn lint
+        run: yarn lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node_version }}
+
+      - name: yarn install
+        run: yarn install
+
+      - name: yarn test
+        run: yarn test
