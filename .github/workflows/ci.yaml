@@ -28,5 +28,5 @@ jobs:
         with:
           node-version: ${{ env.node_version }}
 
-      - name: npm audit
-        run: npm audit --audit-level=critical
+      - name: yarn audit
+        run: yarn audit --level critical
