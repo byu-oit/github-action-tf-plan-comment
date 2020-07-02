@@ -1,5 +1,5 @@
-![build](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/build/badge.svg)
-![test](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/test/badge.svg)
+![CI](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/CI/badge.svg)
+![Test](https://github.com/byu-oit/github-action-tf-plan-comment/workflows/Test/badge.svg)
 
 # ![BYU logo](https://www.hscripts.com/freeimages/logos/university-logos/byu/byu-logo-clipart-128.gif) github-action-tf-plan-comment
 
