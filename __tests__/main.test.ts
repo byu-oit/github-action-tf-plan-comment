@@ -1,5 +1,5 @@
-import { PlanCommenter } from '../src/main'
-import { Action, PullRequest, TerraformPlan } from '../src/types'
+import {PlanCommenter} from '../src/main'
+import {Action, PullRequest, TerraformPlan} from '../src/types'
 import * as github from '@actions/github'
 import nock = require('nock')
 
@@ -19,17 +19,18 @@ test('Test Basic Plan Summary', async () => {
 
   const commenter = new PlanCommenter(github.getOctokit('fake'), 1234, pr)
   const plan: TerraformPlan = {
-    resource_changes: [{
-      address: 'local_file.fake_file',
-      type: 'local_file',
-      name: 'fake_file',
-      change: {
-        actions: [Action.delete, Action.create]
-      },
-    }]
+    resource_changes: [
+      {
+        address: 'local_file.fake_file',
+        type: 'local_file',
+        name: 'fake_file',
+        change: {
+          actions: [Action.delete, Action.create]
+        }
+      }
+    ]
   }
   const summary = await commenter.planSummaryBody(plan)
-  console.log(summary)
   const expected = `## Terraform Plan:
 will **replace (delete then create)** 1 resource: 
   * local_file - fake_file
@@ -38,4 +39,13 @@ will **replace (delete then create)** 1 resource:
   expect(summary).toEqual(expected)
 
   scope.done()
+})
+
+test('Test Empty Plan Summary', async () => {
+  const commenter = new PlanCommenter(github.getOctokit('fake'), 1234, pr)
+  const emptyPlan: TerraformPlan = {}
+  const summary = await commenter.planSummaryBody(emptyPlan)
+  const expected = `## Terraform Plan:
+No changes detected`
+  expect(summary).toEqual(expected)
 })

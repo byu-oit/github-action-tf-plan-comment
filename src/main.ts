@@ -5,7 +5,8 @@ import {GitHub} from '@actions/github/lib/utils'
 import {Action, PullRequest, TerraformPlan} from './types'
 import {ExecOptions} from '@actions/exec'
 
-const commentPrefix = '## Terraform Plan:'
+export const commentPrefix = '## Terraform Plan:'
+export const noChangesComment = '## Terraform Plan:\nNo changes detected'
 
 async function run(): Promise<void> {
   try {
@@ -123,6 +124,10 @@ export class PlanCommenter {
     const toDelete = []
     const toReplace = []
     const toUpdate = []
+    if (!terraformPlan.resource_changes) {
+      return noChangesComment
+    }
+
     for (const resourceChange of terraformPlan.resource_changes) {
       const actions = resourceChange.change.actions
       const resourceName = `${resourceChange.type} - ${resourceChange.name}`
