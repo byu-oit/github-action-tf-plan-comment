@@ -32,7 +32,7 @@ async function run(): Promise<void> {
       return
     }
 
-    const commenter = new PlanCommenter(token, runId, pr)
+    const commenter = new PlanCommenter(github.getOctokit(token), runId, pr)
     await commenter.commentWithPlanSummary(terraformPlan)
   } catch (error) {
     core.setFailed(error.message)
@@ -72,13 +72,13 @@ async function jsonFromPlan(workingDir: string, planFileName: string): Promise<s
   return json[0]
 }
 
-class PlanCommenter {
+export class PlanCommenter {
   octokit: InstanceType<typeof GitHub>
   runId: number
   pr: PullRequest
 
-  constructor(token: string, runId: number, pr: PullRequest) {
-    this.octokit = github.getOctokit(token)
+  constructor(octokit: InstanceType<typeof GitHub>, runId: number, pr: PullRequest) {
+    this.octokit = octokit
     this.runId = runId
     this.pr = pr
   }

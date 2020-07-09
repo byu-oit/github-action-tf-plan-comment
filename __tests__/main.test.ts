@@ -1,30 +1,41 @@
-// TODO make tests
-test('test', () => {
-  expect(true).toEqual(true)
+import { PlanCommenter } from '../src/main'
+import { Action, PullRequest, TerraformPlan } from '../src/types'
+import * as github from '@actions/github'
+import nock = require('nock')
+
+const pr: PullRequest = {
+  number: -1,
+  body: '',
+  html_url: ''
+}
+process.env['GITHUB_REPOSITORY'] = 'https://github.com/byu-oit/github-action-tf-plan-comment'
+
+test('Test Basic Plan Summary', async () => {
+  const scope = nock('https://api.github.com')
+    .get(/.*/)
+    .reply(200, {
+      html_url: 'https://test/workflow/url'
+    })
+
+  const commenter = new PlanCommenter(github.getOctokit('fake'), 1234, pr)
+  const plan: TerraformPlan = {
+    resource_changes: [{
+      address: 'local_file.fake_file',
+      type: 'local_file',
+      name: 'fake_file',
+      change: {
+        actions: [Action.delete, Action.create]
+      },
+    }]
+  }
+  const summary = await commenter.planSummaryBody(plan)
+  console.log(summary)
+  const expected = `## Terraform Plan:
+will **replace (delete then create)** 1 resource: 
+  * local_file - fake_file
+
+[see details](https://test/workflow/url)`
+  expect(summary).toEqual(expected)
+
+  scope.done()
 })
-// import * as process from 'process'
-// import * as cp from 'child_process'
-// import * as path from 'path'
-//
-// test('throws invalid number', async () => {
-//   const input = parseInt('foo', 10)
-//   await expect(wait(input)).rejects.toThrow('milliseconds not a number')
-// })
-//
-// test('wait 500 ms', async () => {
-//   const start = new Date()
-//   await wait(500)
-//   const end = new Date()
-//   var delta = Math.abs(end.getTime() - start.getTime())
-//   expect(delta).toBeGreaterThan(450)
-// })
-//
-// // shows how the runner will run a javascript action with env / stdout protocol
-// test('test runs', () => {
-//   process.env['INPUT_MILLISECONDS'] = '500'
-//   const ip = path.join(__dirname, '..', 'lib', 'main.js')
-//   const options: cp.ExecSyncOptions = {
-//     env: process.env
-//   }
-//   console.log(cp.execSync(`node ${ip}`, options).toString())
-// })
