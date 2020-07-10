@@ -1740,11 +1740,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlanCommenter = exports.noChangesComment = exports.commentPrefix = void 0;
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
 const github = __importStar(__webpack_require__(469));
 const types_1 = __webpack_require__(251);
-const commentPrefix = '## Terraform Plan:';
+exports.commentPrefix = '## Terraform Plan:';
+exports.noChangesComment = '## Terraform Plan:\nNo changes detected';
 async function run() {
     try {
         core.debug('got inside the action');
@@ -1765,7 +1767,7 @@ async function run() {
             core.setFailed('No GITHUB_RUN_ID found');
             return;
         }
-        const commenter = new PlanCommenter(token, runId, pr);
+        const commenter = new PlanCommenter(github.getOctokit(token), runId, pr);
         await commenter.commentWithPlanSummary(terraformPlan);
     }
     catch (error) {
@@ -1802,8 +1804,8 @@ async function jsonFromPlan(workingDir, planFileName) {
     return json[0];
 }
 class PlanCommenter {
-    constructor(token, runId, pr) {
-        this.octokit = github.getOctokit(token);
+    constructor(octokit, runId, pr) {
+        this.octokit = octokit;
         this.runId = runId;
         this.pr = pr;
     }
@@ -1816,7 +1818,7 @@ class PlanCommenter {
         });
         let previousCommentId = null;
         for (const comment of comments.data) {
-            if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(commentPrefix)) {
+            if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(exports.commentPrefix)) {
                 previousCommentId = comment.id;
             }
         }
@@ -1847,6 +1849,9 @@ class PlanCommenter {
         const toDelete = [];
         const toReplace = [];
         const toUpdate = [];
+        if (!terraformPlan.resource_changes) {
+            return exports.noChangesComment;
+        }
         for (const resourceChange of terraformPlan.resource_changes) {
             const actions = resourceChange.change.actions;
             const resourceName = `${resourceChange.type} - ${resourceChange.name}`;
@@ -1873,7 +1878,7 @@ class PlanCommenter {
         core.debug(`toUpdate: ${toUpdate}`);
         core.debug(`toReplace: ${toReplace}`);
         core.debug(`toDelete: ${toDelete}`);
-        let body = `${commentPrefix}\n`;
+        let body = `${exports.commentPrefix}\n`;
         body += PlanCommenter.resourcesToChangeSection('create', toCreate);
         body += PlanCommenter.resourcesToChangeSection('update', toUpdate);
         body += PlanCommenter.resourcesToChangeSection('**delete**', toDelete);
@@ -1909,6 +1914,7 @@ class PlanCommenter {
         return workflow.data.html_url;
     }
 }
+exports.PlanCommenter = PlanCommenter;
 run();
 
 
