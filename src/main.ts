@@ -5,7 +5,8 @@ import {GitHub} from '@actions/github/lib/utils'
 import {Action, PullRequest, TerraformPlan} from './types'
 import {ExecOptions} from '@actions/exec'
 
-const commentPrefix = '## Terraform Plan:'
+export const commentPrefix = '## Terraform Plan:'
+export const noChangesComment = '## Terraform Plan:\nNo changes detected'
 
 async function run(): Promise<void> {
   try {
@@ -32,7 +33,7 @@ async function run(): Promise<void> {
       return
     }
 
-    const commenter = new PlanCommenter(token, runId, pr)
+    const commenter = new PlanCommenter(github.getOctokit(token), runId, pr)
     await commenter.commentWithPlanSummary(terraformPlan)
   } catch (error) {
     core.setFailed(error.message)
@@ -72,13 +73,13 @@ async function jsonFromPlan(workingDir: string, planFileName: string): Promise<s
   return json[0]
 }
 
-class PlanCommenter {
+export class PlanCommenter {
   octokit: InstanceType<typeof GitHub>
   runId: number
   pr: PullRequest
 
-  constructor(token: string, runId: number, pr: PullRequest) {
-    this.octokit = github.getOctokit(token)
+  constructor(octokit: InstanceType<typeof GitHub>, runId: number, pr: PullRequest) {
+    this.octokit = octokit
     this.runId = runId
     this.pr = pr
   }
@@ -123,6 +124,10 @@ class PlanCommenter {
     const toDelete = []
     const toReplace = []
     const toUpdate = []
+    if (!terraformPlan.resource_changes) {
+      return noChangesComment
+    }
+
     for (const resourceChange of terraformPlan.resource_changes) {
       const actions = resourceChange.change.actions
       const resourceName = `${resourceChange.type} - ${resourceChange.name}`

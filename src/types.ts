@@ -1,5 +1,5 @@
 export interface TerraformPlan {
-  resource_changes: ResourceChange[]
+  resource_changes?: ResourceChange[]
 }
 
 export interface ResourceChange {
