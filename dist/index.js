@@ -1740,13 +1740,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlanCommenter = exports.noChangesComment = exports.commentPrefix = void 0;
+exports.PlanCommenter = exports.noChangesComment = void 0;
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
 const github = __importStar(__webpack_require__(469));
 const types_1 = __webpack_require__(251);
-exports.commentPrefix = '## Terraform Plan:';
-exports.noChangesComment = '## Terraform Plan:\nNo changes detected';
+exports.noChangesComment = 'No changes detected';
 async function run() {
     try {
         core.debug('got inside the action');
@@ -1758,6 +1757,7 @@ async function run() {
         core.debug('got pull request');
         const planFileName = core.getInput('terraform-plan-file');
         const workingDir = core.getInput('working-directory');
+        const commentTitle = core.getInput('comment-title');
         const json = await jsonFromPlan(workingDir, planFileName);
         const terraformPlan = JSON.parse(json);
         core.debug('successfully parsed json');
@@ -1767,7 +1767,12 @@ async function run() {
             core.setFailed('No GITHUB_RUN_ID found');
             return;
         }
-        const commenter = new PlanCommenter(github.getOctokit(token), runId, pr);
+        const commenter = new PlanCommenter({
+            octokit: github.getOctokit(token),
+            runId,
+            pr,
+            commentTitle
+        });
         await commenter.commentWithPlanSummary(terraformPlan);
     }
     catch (error) {
@@ -1804,10 +1809,12 @@ async function jsonFromPlan(workingDir, planFileName) {
     return json[0];
 }
 class PlanCommenter {
-    constructor(octokit, runId, pr) {
-        this.octokit = octokit;
-        this.runId = runId;
-        this.pr = pr;
+    constructor(options) {
+        this.octokit = options.octokit;
+        this.runId = options.runId;
+        this.pr = options.pr;
+        this.commentPrefix =
+            options.commentTitle === undefined ? '## Terraform Plan:' : `## ${options.commentTitle}:`;
     }
     async commentWithPlanSummary(terraformPlan) {
         const body = await this.planSummaryBody(terraformPlan);
@@ -1818,7 +1825,8 @@ class PlanCommenter {
         });
         let previousCommentId = null;
         for (const comment of comments.data) {
-            if (comment.user.login === 'github-actions[bot]' && comment.body.startsWith(exports.commentPrefix)) {
+            if (comment.user.login === 'github-actions[bot]' &&
+                comment.body.startsWith(this.commentPrefix)) {
                 previousCommentId = comment.id;
             }
         }
@@ -1850,7 +1858,7 @@ class PlanCommenter {
         const toReplace = [];
         const toUpdate = [];
         if (!terraformPlan.resource_changes) {
-            return exports.noChangesComment;
+            return `${this.commentPrefix}\n${exports.noChangesComment}`;
         }
         for (const resourceChange of terraformPlan.resource_changes) {
             const actions = resourceChange.change.actions;
@@ -1878,7 +1886,7 @@ class PlanCommenter {
         core.debug(`toUpdate: ${toUpdate}`);
         core.debug(`toReplace: ${toReplace}`);
         core.debug(`toDelete: ${toDelete}`);
-        let body = `${exports.commentPrefix}\n`;
+        let body = `${this.commentPrefix}\n`;
         body += PlanCommenter.resourcesToChangeSection('create', toCreate);
         body += PlanCommenter.resourcesToChangeSection('update', toUpdate);
         body += PlanCommenter.resourcesToChangeSection('**delete**', toDelete);

@@ -45,6 +45,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: __tests__
           terraform-plan-file: ../test-plan.tfplan
+          comment-title: Terraform Plan in different dir
 
   test-action-without-tf-wrapper: # make sure the action works without the terraform wrapper
     name: Test without TF wrapper
@@ -66,6 +67,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: __tests__
           terraform-plan-file: test-plan.tfplan
+          comment-title: Terraform Plan without wrapper
 
   test-action-at-root: # make sure the action works with terraform dir as root dir
     name: Test from Root
@@ -84,3 +86,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           terraform-plan-file: test-plan.tfplan
+          comment-title: Terraform Plan from root
