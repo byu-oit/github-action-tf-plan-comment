@@ -32,6 +32,10 @@ jobs:
 * `github-token` - (**required**) pass in the GitHub token to make comments on the PR
 * `working-directory` - (_optional_) the directory of the terraform configuration files (defaults to `.`)
 * `terraform-plan-file` - (**required**) Filename of the terraform plan (relative to `working-directory`)
+* `comment-title` - (_optional_) Title for the comment this action will make on your pull request (defaults to `Terraform Plan`)
+    
+**note**: the `comment-title` is used to determine which PR comment to update.
+For instance if you have two of these actions in one PR with the same `comment-title` then they will both try to update the same comment.
 
 ## Output
 This action will create a comment on your PR like:
@@ -53,7 +57,9 @@ GitHub Actions will run the entry point from the action.yml.
 In our case, that happens to be /dist/index.js.
 
 Actions run from GitHub repos.
-We don't want to check in node_modules. Hence, we package the app using `yarn run pack`.
+We don't want to check in node_modules. 
+Hence, we package the app using `yarn run pack`.
+Make sure you run `yarn run pack` before committing/pushing.
 
 ### Modifying Source Code
 Just run `yarn install` locally.

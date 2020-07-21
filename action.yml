@@ -12,6 +12,10 @@ inputs:
     required: false
     description: Directory of the terraform configuration
     default: .
+  comment-title:
+    required: false
+    description: Title of the comment
+    default: Terraform Plan
 runs:
   using: 'node12'
   main: 'dist/index.js'
