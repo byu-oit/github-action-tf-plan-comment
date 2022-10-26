@@ -102,22 +102,22 @@ export class PlanCommenter {
   async commentWithPlanSummary(terraformPlan: TerraformPlan): Promise<number> {
     const body = await this.planSummaryBody(terraformPlan)
     // find previous comment if it exists
-    const comments = await this.octokit.issues.listComments({
+    const comments = await this.octokit.rest.issues.listComments({
       ...github.context.repo,
       issue_number: this.pr.number
     })
     let previousCommentId: number | null = null
     for (const comment of comments.data) {
       if (
-        comment.user.login === 'github-actions[bot]' &&
-        comment.body.startsWith(this.commentPrefix)
+        comment.user?.login === 'github-actions[bot]' &&
+        comment.body?.startsWith(this.commentPrefix)
       ) {
         previousCommentId = comment.id
       }
     }
     if (previousCommentId) {
       // update the previous comment
-      const updatedComment = await this.octokit.issues.updateComment({
+      const updatedComment = await this.octokit.rest.issues.updateComment({
         ...github.context.repo,
         issue_number: this.pr.number,
         comment_id: previousCommentId,
@@ -127,7 +127,7 @@ export class PlanCommenter {
       return updatedComment.data.id
     } else {
       // create new comment if previous comment does not exist
-      const createdComment = await this.octokit.issues.createComment({
+      const createdComment = await this.octokit.rest.issues.createComment({
         ...github.context.repo,
         issue_number: this.pr.number,
         body
@@ -204,7 +204,7 @@ export class PlanCommenter {
 
   // TODO find a way to link directly to job/step. I can't seem to figure out which job is running without hard coding in job names into each of our repos that use this action
   private async linkToWorkflowJob(): Promise<string> {
-    const workflow = await this.octokit.actions.getWorkflowRun({
+    const workflow = await this.octokit.rest.actions.getWorkflowRun({
       ...github.context.repo,
       run_id: this.runId
     })
