@@ -2400,7 +2400,7 @@ class PlanCommenter {
         // find previous comment if it exists
         const comments = await this.octokit.rest.issues.listComments({
             ...github.context.repo,
-            issue_number: this.pr.number
+            issue_number: this.pr.number // eslint-disable-line @typescript-eslint/camelcase
         });
         let previousCommentId = null;
         for (const comment of comments.data) {
@@ -2495,7 +2495,7 @@ class PlanCommenter {
     async linkToWorkflowJob() {
         const workflow = await this.octokit.rest.actions.getWorkflowRun({
             ...github.context.repo,
-            run_id: this.runId
+            run_id: this.runId // eslint-disable-line @typescript-eslint/camelcase
         });
         return workflow.data.html_url;
     }
