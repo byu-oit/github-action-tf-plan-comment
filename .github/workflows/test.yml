@@ -12,8 +12,8 @@ jobs:
     env:
       tf_version: 0.12.27
     steps:
-    - uses: actions/checkout@v1
-    - uses: hashicorp/setup-terraform@v1
+    - uses: actions/checkout@v3
+    - uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: ${{ env.tf_version }}
     - run: terraform init
@@ -32,8 +32,8 @@ jobs:
     env:
       tf_version: 0.12.27
     steps:
-      - uses: actions/checkout@v1
-      - uses: hashicorp/setup-terraform@v1
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
       - run: terraform init
@@ -53,8 +53,8 @@ jobs:
     env:
       tf_version: 0.12.27
     steps:
-      - uses: actions/checkout@v1
-      - uses: hashicorp/setup-terraform@v1
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
           terraform_wrapper: false
@@ -75,9 +75,9 @@ jobs:
     env:
       tf_version: 0.12.27
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - run: mv __tests__/* .
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.tf_version }}
       - run: terraform init
