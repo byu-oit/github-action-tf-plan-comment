@@ -41,12 +41,22 @@ async function run(): Promise<void> {
     })
     await commenter.commentWithPlanSummary(terraformPlan)
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    } else if (typeof error === 'string') {
+      core.setFailed(error)
+    } else {
+      core.setFailed(`An unexpected error occurred: ${error}`)
+    }
   }
 }
 
 // we need to parse the terraform plan into a json string
 async function jsonFromPlan(workingDir: string, planFileName: string): Promise<string> {
+  const exitCode = await exec.exec('which tofu', undefined, {silent: true, ignoreReturnCode: true})
+  const hasTofu = exitCode === 0
+  const command = hasTofu ? 'tofu' : 'terraform'
+
   // run terraform show -json to parse the plan into a json string
   let output = ''
   const options: ExecOptions = {
@@ -60,7 +70,7 @@ async function jsonFromPlan(workingDir: string, planFileName: string): Promise<s
   }
 
   core.debug(`execOptions: ${JSON.stringify(options)}`)
-  await exec.exec('terraform', ['show', '-json', planFileName], options)
+  await exec.exec(command, ['show', '-json', planFileName], options)
 
   // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
   const json = output.match(/{.*}/)

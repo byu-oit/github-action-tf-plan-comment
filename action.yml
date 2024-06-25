@@ -17,5 +17,5 @@ inputs:
     description: Title of the comment
     default: Terraform Plan
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
