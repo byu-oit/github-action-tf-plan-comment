@@ -23,11 +23,9 @@ const basicTestPlan: TerraformPlan = {
 process.env['GITHUB_REPOSITORY'] = 'https://github.com/byu-oit/github-action-tf-plan-comment'
 
 test('Test Basic Plan Summary', async () => {
-  const scope = nock('https://api.github.com')
-    .get(/.*/)
-    .reply(200, {
-      html_url: 'https://test/workflow/url'
-    })
+  const scope = nock('https://api.github.com').get(/.*/).reply(200, {
+    html_url: 'https://test/workflow/url'
+  })
 
   const commenter = new PlanCommenter({
     octokit: github.getOctokit('fake'),
@@ -60,11 +58,9 @@ No changes detected`
 })
 
 test('Test Basic Plan with custom title', async () => {
-  const scope = nock('https://api.github.com')
-    .get(/.*/)
-    .reply(200, {
-      html_url: 'https://test/workflow/url'
-    })
+  const scope = nock('https://api.github.com').get(/.*/).reply(200, {
+    html_url: 'https://test/workflow/url'
+  })
 
   const commenter = new PlanCommenter({
     octokit: github.getOctokit('fake'),
