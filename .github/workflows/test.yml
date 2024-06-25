@@ -89,7 +89,7 @@ jobs:
           comment-title: Terraform Plan from root
 
   tofu: # make sure the action works when using tofu
-    name: Test tofu
+    name: Tofu
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -105,3 +105,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: __tests__
           terraform-plan-file: test-plan.tfplan
+          comment-title: Tofu Plan
