@@ -10,7 +10,7 @@
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
-    "test": "jest",
+    "test": "jest --forceExit",
     "all": "yarn build && yarn format && yarn lint && yarn run pack && yarn test"
   },
   "repository": {
