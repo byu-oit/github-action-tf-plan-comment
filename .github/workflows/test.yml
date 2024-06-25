@@ -87,3 +87,21 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           terraform-plan-file: test-plan.tfplan
           comment-title: Terraform Plan from root
+
+  tofu: # make sure the action works when using tofu
+    name: Test tofu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.0
+      - run: tofu init
+        working-directory: __tests__
+      - run: tofu plan -out test-plan.tfplan
+        working-directory: __tests__
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: __tests__
+          terraform-plan-file: test-plan.tfplan
